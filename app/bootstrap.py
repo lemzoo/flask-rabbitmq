@@ -1,5 +1,4 @@
 from flask import Flask
-from flask.ext.mongoengine import mongoengine
 from flask_mongoengine import MongoEngine
 from flask import request, abort
 
@@ -54,34 +53,6 @@ class Post(db.Document):
     author = db.ReferenceField(User)
     tags = db.ListField(db.StringField(max_length=30))
     content = db.EmbeddedDocumentField(Content)
-
-    def save_or_abort(self, abort=abort, if_match=None):
-        try:
-            if if_match is True:
-                self.document.save(
-                    save_condition={"doc_version": self.document.doc_version})
-            elif if_match:
-                self.document.save(save_condition={"doc_version": if_match})
-            else:
-                self.document.save()
-        except mongoengine.ValidationError as exc:
-            errors = exc.to_dict()
-            if errors:
-                # ValidationErrors issued in the clean function are wrapped
-                # in a useless NON_FIELD_ERRORS
-                non_field_errors = errors.pop(
-                    mongoengine.base.NON_FIELD_ERRORS, {})
-                if isinstance(non_field_errors, dict):
-                    errors.update(non_field_errors)
-                    abort(400, **errors)
-                else:
-                    abort(400, non_field_errors)
-            else:
-                abort(400, exc.message)
-        except mongoengine.errors.NotUniqueError as exc:
-            abort(400, parse_error_e11000(exc))
-        except mongoengine.errors.FieldDoesNotExist as exc:
-            abort(400, str(exc))
 
 
 if __name__ == "__main__":
