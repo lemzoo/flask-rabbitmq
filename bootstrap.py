@@ -4,6 +4,8 @@ from flask import request, abort
 
 import json
 
+from app.model import User
+
 
 app = Flask(__name__)
 
@@ -35,24 +37,6 @@ def post():
     except Exception as error:
         abort(400, str(error))
     return user.email
-
-
-class User(db.Document):
-    email = db.StringField(required=True, unique=True)
-    first_name = db.StringField(max_length=50)
-    last_name = db.StringField(max_length=50)
-
-
-class Content(db.EmbeddedDocument):
-    text = db.StringField()
-    lang = db.StringField(max_length=3)
-
-
-class Post(db.Document):
-    title = db.StringField(max_length=120, required=True)
-    author = db.ReferenceField(User)
-    tags = db.ListField(db.StringField(max_length=30))
-    content = db.EmbeddedDocumentField(Content)
 
 
 if __name__ == "__main__":
