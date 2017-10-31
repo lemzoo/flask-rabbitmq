@@ -1,25 +1,18 @@
-from flask import Flask, request
+from flask import Flask
 from flask_mongoengine import MongoEngine
+from flask_restful import Api
 
-from app import view
+from app.view import api
 
 app = Flask(__name__)
+api.init_app(app)
+
+api = Api(app)
 
 # Load the default configuration
 app.config.from_pyfile('default-config.cfg')
 
 db = MongoEngine(app)
-
-
-@app.route('/user/<string:email>', methods=['GET'])
-def get(email):
-    return view.get(email)
-
-
-@app.route('/user', methods=['POST'])
-def post():
-    payload = request.get_json()
-    return view.post(payload)
 
 
 if __name__ == "__main__":
