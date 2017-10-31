@@ -1,6 +1,6 @@
 from flask_mongoengine import Document
 from mongoengine import EmbeddedDocument
-from app import fields
+from mongoengine import fields
 
 
 class User(Document):
