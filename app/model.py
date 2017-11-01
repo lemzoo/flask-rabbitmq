@@ -1,3 +1,4 @@
+from flask_marshmallow import Schema
 from flask_mongoengine import Document
 from mongoengine import EmbeddedDocument
 from mongoengine import fields
@@ -7,6 +8,14 @@ class User(Document):
     email = fields.StringField(required=True, unique=True)
     first_name = fields.StringField(max_length=50)
     last_name = fields.StringField(max_length=50)
+
+
+class UserSchema(Schema):
+    class Meta:
+        # Fields to expose
+        fields = ('email', 'first_name', 'last_name')
+        model = User
+        model_build_obj = True
 
 
 class Content(EmbeddedDocument):
