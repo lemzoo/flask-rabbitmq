@@ -5,9 +5,9 @@ from mongoengine import fields
 
 
 class User(Document):
-    email = fields.StringField(required=True, unique=True)
-    first_name = fields.StringField(max_length=50)
-    last_name = fields.StringField(max_length=50)
+    email = fields.EmailField(required=True, unique=True)
+    first_name = fields.StringField(required=True, min_length=2)
+    last_name = fields.StringField(required=True, min_length=2)
 
 
 class UserSchema(Schema):
