@@ -6,8 +6,7 @@ from flask_mongoengine import MongoEngine
 
 class CoreApp(Flask):
     """
-    CoreApp is a regular :class:`Flask` app with cors, flask-principal,
-    "restfulness" flavors
+    CoreApp is a regular :class:`Flask` app
     """
 
     def __init__(self, *args, **kwargs):
