@@ -11,7 +11,7 @@ class CoreApp(Flask):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.root_path = abspath(dirname(__file__) + '/..')
+        self.root_path = abspath(dirname(__file__))
         self.db = MongoEngine()
 
     def bootstrap(self):
@@ -50,3 +50,8 @@ def bootstrap_app(app=None, config=None):
     api.init_app(app)
 
     return app
+
+
+if __name__ == "__main__":
+    app = bootstrap_app()
+    app.run(debug=True)
