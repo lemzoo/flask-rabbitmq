@@ -42,12 +42,14 @@ def bootstrap_app(app=None, config=None):
     elif config:
         app.config.update(config)
 
+    from app.events import events
     from app.view import api
 
     app.bootstrap()
 
     api.prefix = app.config['API_PREFIX']
     api.init_app(app)
+    events.init_events(app)
 
     return app
 
