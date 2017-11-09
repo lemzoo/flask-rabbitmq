@@ -5,6 +5,7 @@ Centralize the events
 from flask import current_app
 
 from app.events.events_handler_template import EVENT_HANDLERS_TEMPLATE
+from broker_rabbit.broker import BrokerRabbitMQ
 
 
 class Tree:
@@ -99,9 +100,8 @@ class Event:
             return self.name == other
 
     def send(self, origin=None, **kwargs):
-        # broker_rabbit = current_app.extensions['broker_rabbit']
-        # return broker_rabbit.send(self.name, origin=origin, context=kwargs)
-        pass
+        broker = current_app.extensions['broker']
+        return broker.send(self.name, origin=origin, context=kwargs)
 
 
 class EventTree(Tree):
@@ -110,35 +110,18 @@ class EventTree(Tree):
         return Event(route)
 
 
-EVENTS = EventTree({
-    'utilisateur': ('cree', 'modifie'),
-    'site': ('cree', 'modifie', 'ferme', {'creneaux': ('cree', 'supprime')}),
-    'recueil_da': ('modifie', 'pa_realise', 'demandeurs_identifies',
-                   'exploite', 'exploite_by_step', 'annule', {'prefecture_rattachee': 'modifie'}),
-    'droit': ('cree', 'retire', 'refus', 'modifie', {'prefecture_rattachee': 'modifie'},
-              {'support': ('cree', 'modifie', 'annule')}),
-    'demande_asile': ('cree', 'modifie', 'oriente', 'procedure_requalifiee',
-                      'en_cours_procedure_dublin', 'en_attente_ofpra',
-                      'attestation_edite', 'procedure_finie', 'introduit_ofpra', 'dublin_modifie',
-                      'decision_definitive', 'decision_attestation',
-                      'recevabilite_ofpra',
-                      {'prefecture_rattachee': 'modifie'}),
-    'usager': ('cree', 'modifie', {'etat_civil': ('modifie', 'valide')},
-               {'localisation': 'modifie'}, {'prefecture_rattachee': 'modifie'}),
-
-    'telemOfpra': ('cree'),
-    'declaration': ({'vlsts': 'cree'}),
-})
+EVENTS = EventTree(
+    {
+        'user': ('create', 'read', 'update', 'delete'),
+    }
+)
 
 
 def init_events(app):
-
-    # app.json_encoder.register(Event, lambda x: x.name)
-
     app.config['BROKER_AVAILABLE_EVENTS'] = [e.name for e in EVENTS]
     event_handlers = EVENT_HANDLERS_TEMPLATE.copy()
 
-    # broker_rabbit = BrokerRabbit()
-    # broker_rabbit.init_app(app, event_handlers)
+    broker = BrokerRabbitMQ()
+    broker.init_app(app, event_handlers)
 
     return event_handlers

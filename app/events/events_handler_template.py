@@ -24,20 +24,32 @@ Cordialement,
 
 EVENT_HANDLERS_TEMPLATE = [
     {
-        'label': 'declaration.vlsts.cree',  # Pas encore testé avec Rabbit
-        'queue': 'immi2',
-        'processor': 'declaration_arrivee_en_france',
-        'event': 'declaration.vlsts.cree',
-        'on_error_callback': canceled_message_and_send_mail,
-        'to_rabbit': False
+        'label': 'Register a user',
+        'queue': 'user',
+        'processor': 'register_processor',
+        'event': 'user.create',
+        'on_error_callback': canceled_message_and_send_mail
     },
     {
-        "label": "fne_batch-declaration.vlsts.cree",
-        "to_batch": True,
-        "queue": "fne",
-        'processor_batch_in': 'fne_batch_processor_in',
-        "processor_batch_out": "fne_batch_processor_out",
-        "event": "declaration.vlsts.cree",
+        'label': 'View user',
+        'queue': 'user',
+        'processor': 'count_user_viewing_processor',
+        'event': 'user.read',
+        'on_error_callback': canceled_message_and_send_mail
+    },
+    {
+        'label': 'Update user',
+        'queue': 'user',
+        'processor': 'notify_user_update',
+        'event': 'user.update',
+        'on_error_callback': canceled_message_and_send_mail
+    },
+    {
+        'label': 'Delete a user',
+        'queue': 'user',
+        'processor': 'disable_user_processor',
+        'event': 'user.delete',
+        'on_error_callback': canceled_message_and_send_mail
     },
 ]
 
