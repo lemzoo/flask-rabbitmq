@@ -8,10 +8,18 @@ broker_rabbit_manager = Manager(usage="Perform broker rabbitmq operations")
 
 
 def _get_broker_rabbit():
-    broker_rabbit = current_app.extensions.get('broker_rabbit')
+    broker_rabbit = current_app.extensions.get('broker')
     if not broker_rabbit:
-        raise Exception('Extension `broker_rabbit` not initialized')
+        raise Exception('Extension `broker` not initialized')
     return broker_rabbit
+
+
+@broker_rabbit_manager.command
+def list_queues():
+    """List all available queue in the app"""
+    broker = _get_broker_rabbit()
+    for queue in broker.queues:
+        print('Queue name : `%s`' % queue)
 
 
 @broker_rabbit_manager.option('queue', help='Single queue to consume')
