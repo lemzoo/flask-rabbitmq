@@ -55,11 +55,10 @@ class ChannelHandler:
 
 class WorkerChannel(ChannelHandler):
 
-    def __init__(self, connection, queue, event_handler, message):
+    def __init__(self, connection, queue, event_handler):
         super().__init__(connection)
         self.queue = queue
         self.event_handler = event_handler
-        self.message = message
 
     def run(self):
         LOGGER.info('Consuming message on queue : %s', self.queue)
@@ -92,9 +91,8 @@ class WorkerChannel(ChannelHandler):
     def on_message(self, channel, method, properties, body):
         try:
             msg_received = body.decode()
-            msg_to_process = self.message.load(msg_received)
             LOGGER.info('Received message # %s #', msg_received)
-            self.event_handler.execute_rabbit(msg_to_process)
+            self.event_handler.process_message(msg_received)
         except Exception as e:
             # TODO: handle dead letter
             LOGGER.error('Exception {} occured when trying to decode the data received '

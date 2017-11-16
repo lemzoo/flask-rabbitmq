@@ -10,7 +10,7 @@ class Worker:
     close the current channel.
     """
 
-    def __init__(self, connection_handler, queue, event_handler, message):
+    def __init__(self, connection_handler, queue, event_handler):
         """
         Instantiate a Worker with an opened connection and a queue name to work
         The channel is opened in the instantiation of the module for ready use.
@@ -20,14 +20,11 @@ class Worker:
          worker and RabbitMQ.
         :param Queue queue : The name of the queue to work
         :param EventHandler event_handler: the event handler which execute the message
-        :param Message message: the model of the message which is bind to MongoDB
         """
         self._connection = connection_handler.get_current_connection()
         self._queue = queue
         self.event_handler = event_handler
-        self.message = message
-        self._worker_channel = WorkerChannel(self._connection, self._queue,
-                                             self.event_handler, self.message)
+        self._worker_channel = WorkerChannel(self._connection, self._queue, self.event_handler)
 
         self.logger = logging.getLogger('RabbitMQ-Worker')
 

@@ -106,6 +106,11 @@ class EventHandler:
 
     def __init__(self, handlers):
         self.items = [EventHandlerItem(eh) for eh in handlers]
+        self.count_received_msg = 0
+
+    def process_message(self, received_msg):
+        self.count_received_msg += 1
+        print('Received message number `%s`, content = {%s}' % (self.count_received_msg, received_msg))
 
     def execute_rabbit(self, msg):
         handler = self.get(msg.handler)
