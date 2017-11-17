@@ -52,9 +52,3 @@ EVENT_HANDLERS_TEMPLATE = [
         'on_error_callback': canceled_message_and_send_mail
     },
 ]
-
-
-def event_handlers_factory(app):
-    event_handlers = EVENT_HANDLERS_TEMPLATE.copy()
-
-    return event_handlers
