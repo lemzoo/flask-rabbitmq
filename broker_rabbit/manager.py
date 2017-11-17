@@ -37,4 +37,5 @@ def start(queue):
     connection_handler = ConnectionHandler(rabbit_url)
 
     worker = Worker(connection_handler, queue, event_handler)
+    print('Start consuming message on the queue `%s`' % queue)
     worker.consume_message()
