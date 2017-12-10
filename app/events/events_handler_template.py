@@ -1,4 +1,4 @@
-EVENT_HANDLERS_TEMPLATE = [
+EVENT_MESSAGE_MANAGER = [
     {
         'label': 'Register a user',
         'queue': 'user',

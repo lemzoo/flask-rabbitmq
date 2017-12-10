@@ -13,15 +13,15 @@ class UnknownEventError(EventError):
     pass
 
 
-class EventHandlerItem:
+class EventMessage:
 
-    def __init__(self, event_handler_item_data):
-        self.label = event_handler_item_data['label']
-        self.queue = event_handler_item_data.get('queue')
-        self.processor = event_handler_item_data.get('processor')
-        self.event = event_handler_item_data.get('event')
+    def __init__(self, event_message_item):
+        self.label = event_message_item['label']
+        self.queue = event_message_item.get('queue')
+        self.processor = event_message_item.get('processor')
+        self.event = event_message_item.get('event')
 
-    def modify(self, *args, **kwargs):
+    def modify(self, **kwargs):
         if 'label' in kwargs:
             self.label = kwargs['label']
         if 'queue' in kwargs:
@@ -32,10 +32,10 @@ class EventHandlerItem:
             self.event = kwargs['event']
 
 
-class EventHandler:
+class EventManager:
 
     def __init__(self, handlers):
-        self.items = [EventHandlerItem(eh) for eh in handlers]
+        self.items = [EventMessage(eh) for eh in handlers]
         self.count_received_msg = 0
 
     def process_message(self, received_msg):
@@ -65,9 +65,9 @@ class EventHandler:
         self.items = []
 
     def append(self, item):
-        if isinstance(item, EventHandlerItem):
+        if isinstance(item, EventMessage):
             self.items.append(item)
         elif isinstance(item, dict):
-            self.items.append(EventHandlerItem(item))
+            self.items.append(EventMessage(item))
         else:
             raise ValueError()

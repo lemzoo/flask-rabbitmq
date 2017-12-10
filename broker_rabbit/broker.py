@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from broker_rabbit.event_handler import EventHandler
+from broker_rabbit.event_handler import EventManager
 from broker_rabbit.exceptions import UnknownEventError
 
 from broker_rabbit.rabbit import ConnectionHandler, Producer
@@ -19,7 +19,7 @@ class BrokerRabbitMQ:
         parameters to connect to RabbitMQ.
         """
         self.app = app
-        self.event_handler = None
+        self.event_manager = None
         self.events = None
         self._producer_for_rabbit = None
         self.disable_rabbit = None
@@ -30,12 +30,12 @@ class BrokerRabbitMQ:
         if self.app is not None:
             self.init_app(self.app, **kwargs)
 
-    def init_app(self, app, event_handlers=(), config=None):
+    def init_app(self, app, event_message_manager=[], config=None):
         """ Init the Broker Dispatcher by using the given configuration instead
         default settings.
 
         :param app: Current application context
-        :param list event_handlers: Events handlers defined on the SIAEF app
+        :param list event_message_manager: Events handlers defined on the SIAEF app
         :param dict config: Config parameters to use for this instance
         """
         if not hasattr(app, 'extensions'):
@@ -49,7 +49,7 @@ class BrokerRabbitMQ:
             raise RuntimeError('Extension already initialized')
 
         self.app = app
-        self.event_handler = EventHandler(event_handlers)
+        self.event_manager = EventManager(event_message_manager)
 
         config = config or app.config
         config.setdefault('RABBIT_MQ_URL', DEFAULT_URL)
@@ -59,7 +59,7 @@ class BrokerRabbitMQ:
         self.events = config['BROKER_AVAILABLE_EVENTS']
         self.rabbit_url = config['RABBIT_MQ_URL']
         self.exchange_name = app.config['EXCHANGE_NAME']
-        self.queues = list({eh.queue for eh in self.event_handler.items})
+        self.queues = list({eh.queue for eh in self.event_manager.items})
 
         # Open Connection to RabbitMQ
         connection_handler = ConnectionHandler(self.rabbit_url)
@@ -79,21 +79,21 @@ class BrokerRabbitMQ:
         if event not in self.events:
             raise UnknownEventError('Event %s is not registered' % event)
 
-        event_handlers = self.event_handler.filter(event, origin)
-        for event_handler_item in event_handlers:
-            self.publish_message(event_handler_item, context)
+        event_manager_items = self.event_manager.filter(event)
+        for event_message in event_manager_items:
+            self.publish_message(event_message, context)
 
-    def publish_message(self, event_handler_item, context):
+    def publish_message(self, event_message, context):
         """Route the message to the correct to RabbitMQ by with context
 
-        :param event_handler_item: the retrieved event on the Event Manager List
+        :param event_message: the retrieved event on the Event Manager List
         :param context: the content of the message
         """
-        queue = event_handler_item.queue
+        queue = event_message.queue
         message = {
             'created': datetime.utcnow().isoformat(),
             'queue': queue,
-            'label': event_handler_item.label,
+            'label': event_message.label,
             'json_context': context,
             'status': 'READY',
         }
