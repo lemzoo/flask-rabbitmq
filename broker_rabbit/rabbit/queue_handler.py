@@ -9,7 +9,7 @@ class QueueHandler:
     """
 
     def __init__(self, channel, exchange_name):
-        """Create a new instance of exchange handler class by using the channel.
+        """Create a new instance of exchange handler class by using the channel
 
         :param ChannelHandler channel: The given channel to connect to RabbitMQ
         :param str exchange_name : The name of the exchange to set
