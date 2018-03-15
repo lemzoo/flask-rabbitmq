@@ -3,7 +3,8 @@ from datetime import datetime
 from broker_rabbit.event_handler import EventManager
 from broker_rabbit.exceptions import UnknownEventError
 
-from broker_rabbit.rabbit import ConnectionHandler, Producer
+from broker_rabbit.rabbit.connection_handler import ConnectionHandler
+from broker_rabbit.rabbit.producer import Producer
 
 DEFAULT_URL = 'amqp://test:test@localhost:5672/sief-test'
 DEFAULT_EXCHANGE = 'SIEF'
