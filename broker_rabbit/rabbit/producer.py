@@ -16,7 +16,7 @@ class Producer:
     def init_env_rabbit(self, queues):
         """Initialize the queue on RabbitMQ
 
-        :param list queues: List of queue to setup on rabbit by using default exchange
+        :param list queues: List of queue to setup on rabbit
         """
         self._producer_channel.open()
         try:
