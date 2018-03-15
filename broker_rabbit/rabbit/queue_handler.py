@@ -53,7 +53,8 @@ class QueueHandler:
             raise QueueNameDoesntMatch("This queue name doesn't match")
 
         # TODO : Check declared_queue to return the real name of the queue
-        self._channel.queue_declare(queue=queue_name, durable=durable, auto_delete=auto_delete)
+        self._channel.queue_declare(queue=queue_name, durable=durable,
+                                    auto_delete=auto_delete)
         return queue_name
 
     def bind_queue_to_default_exchange(self, queue_name):
