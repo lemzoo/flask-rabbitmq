@@ -2,8 +2,9 @@ import logging
 import json
 import pika
 
-from broker_rabbit.exceptions import (ConnectionNotOpenedYet, ChannelDoesntExist,
-                                      WorkerExitException, ConnectionIsClosed)
+from broker_rabbit.exceptions import (
+    ConnectionNotOpenedYet, ChannelDoesntExist,
+    WorkerExitException, ConnectionIsClosed)
 
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
