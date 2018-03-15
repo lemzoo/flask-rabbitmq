@@ -12,8 +12,8 @@ DEFAULT_APPLICATION_ID = 'FOO-APPLICATION-ID'
 
 
 class BrokerRabbitMQ:
-    """This is a  Message Broker which using RabbitMQ process for publishing
-    and consuming message on SIAEF application.
+    """This is a  Message Broker which using RabbitMQ
+    process for publishing and consuming messages.
     """
 
     def __init__(self, app=None, **kwargs):
@@ -33,12 +33,12 @@ class BrokerRabbitMQ:
             self.init_app(self.app, **kwargs)
 
     def init_app(self, app, event_message_manager=[], config=None):
-        """ Init the Broker Dispatcher by using the given configuration instead
+        """ Init the Broker by using the given configuration instead
         default settings.
 
         :param app: Current application context
-        :param list event_message_manager: Events handlers defined on the SIAEF app
-        :param dict config: Config parameters to use for this instance
+        :param event_message_manager: Events handlers defined on the app
+        :param config: dictionnary of config parameters
         """
         if not hasattr(app, 'extensions'):
             app.extensions = {}
@@ -89,7 +89,7 @@ class BrokerRabbitMQ:
             self.publish_message(event_message, context)
 
     def publish_message(self, event_message, context):
-        """Route the message to the correct to RabbitMQ by with context
+        """Route the message to the correct queue in RabbitMQ
 
         :param event_message: the retrieved event on the Event Manager List
         :param context: the content of the message
