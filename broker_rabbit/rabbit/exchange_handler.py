@@ -3,23 +3,25 @@ from broker_rabbit.exceptions import (
 
 
 class ExchangeHandler:
-    """This is an Exchange Handler which use the channel handler to set a new
-    or default exchange in RabbitMQ.
+    """This is an Exchange Handler which used by the channel handler to
+    set a new or default exchange in RabbitMQ.
 
     """
 
-    def __init__(self, channel, exchange_name='SIEF', exchange_type='direct',
+    def __init__(self, channel, exchange_name, exchange_type='direct',
                  durable=True, auto_delete=False):
-        """Create a new instance of exchange handler class by using the channel.
+        """Create a new instance of exchange handler class by using the channel
 
         :param ChannelHandler channel: The given channel to connect to RabbitMQ
         :param str exchange_name : The name of the exchange to set
-        :param str : exchange_type : The type of exchange. By default, the
-        exchange is direct type to allow simple routing via the queue name.
-        Here are the type of exchange : direct - fanout - topic.
-        :param boolean durable : The durability of the exchange. Durable
-        exchange remain active when a server restarts. Non-durable exchanges
-        (transient exchanges) are purged if/when a server restarts.
+        :param str : exchange_type : The type of exchange.
+            By default, the exchange is direct type to allow simple routing
+            via the queue name.
+            Here are the type of exchange : direct - fanout - topic.
+        :param boolean durable : The durability of the exchange.
+            Durable exchange remain active when a server restarts.
+            Non-durable exchanges (transient exchanges) are purged when the
+            server restarts. This is not recommended.
         :param boolean auto_delete : Delete the exchange when all queues have
         finished using it. By default, it's False.
         """
