@@ -38,6 +38,7 @@ class Producer:
         """
         self._producer_channel.open()
         try:
-            self._producer_channel.send_message(self._exchange_name, queue, message)
+            self._producer_channel.send_message(self._exchange_name,
+                                                queue, message)
         finally:
             self._producer_channel.close()
