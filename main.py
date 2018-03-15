@@ -20,7 +20,7 @@ class CoreApp(Flask):
 
 def create_app(config=None):
     """
-    Build the app build don't initilize it, useful to get back the default
+    Build the app build don't initialize it, useful to get back the default
     app config, correct it, then call ``bootstrap_app`` with the new config
     """
     app = CoreApp(__name__)
@@ -34,7 +34,7 @@ def create_app(config=None):
 
 def bootstrap_app(app=None, config=None):
     """
-    Create and initilize the sief app
+    Create and initialize the app
     """
 
     if not app:
