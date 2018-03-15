@@ -17,13 +17,6 @@ class QueueHandler:
         self._channel = channel
         self._exchange = exchange_name
 
-    def _check_basic_config(self):
-        if self._channel is None:
-            raise ChannelDoesntExist('Channel is not defined yet')
-
-        if self._exchange is None:
-            raise ExchangeNotDefinedYet('The exchange is not defined')
-
         return
 
     def setup_queue(self, queue_name):
@@ -40,9 +33,12 @@ class QueueHandler:
         # Bind the queue to the exchange
         self.bind_queue_to_default_exchange(declared_queue)
 
-    def setup_queues(self, queues):
-        for queue_name in queues:
-            self.setup_queue(queue_name)
+    def _check_basic_config(self):
+        if self._channel is None:
+            raise ChannelDoesntExist('Channel is not defined yet')
+
+        if self._exchange is None:
+            raise ExchangeNotDefinedYet('The exchange is not defined')
 
     def create_queue(self, queue_name, durable=True, auto_delete=False):
         """Create a new queue with the arguments such as its name.
@@ -63,3 +59,7 @@ class QueueHandler:
     def bind_queue_to_default_exchange(self, queue_name):
         self._check_basic_config()
         self._channel.queue_bind(queue=queue_name, exchange=self._exchange)
+
+    def setup_queues(self, queues):
+        for queue_name in queues:
+            self.setup_queue(queue_name)
