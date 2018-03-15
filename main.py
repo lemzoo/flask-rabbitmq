@@ -52,8 +52,3 @@ def bootstrap_app(app=None, config=None):
     events.init_events(app)
 
     return app
-
-
-if __name__ == "__main__":
-    app = bootstrap_app()
-    app.run(debug=True)
