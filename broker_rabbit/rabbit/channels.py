@@ -127,8 +127,9 @@ class ProducerChannel(ChannelHandler):
 
     def send_message(self, exchange, queue, message):
         msg_to_send = json.dumps(message)
-        self._channel.basic_publish(exchange=exchange, routing_key=queue,
-                                    body=msg_to_send, properties=self._basic_properties)
+        self._channel.basic_publish(
+            exchange=exchange, routing_key=queue,
+            body=msg_to_send, properties=self._basic_properties)
         LOGGER.info('message was published successuffly into RabbitMQ')
 
 
