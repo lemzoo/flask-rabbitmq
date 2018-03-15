@@ -94,11 +94,14 @@ class WorkerChannel(ChannelHandler):
             msg_received = body.decode()
             LOGGER.info('Received message # %s #', msg_received)
             self.event_handler.process_message(msg_received)
-        except Exception as e:
+        except Exception as exception_info:
             # TODO: handle dead letter
-            LOGGER.error('Exception {} occured when trying to decode the data received '
-                         'from RabbitMQ. So the message content will be put on queue dead letter '
-                         'Here are the content of the message : {}' .format(e, body))
+            LOGGER.error(
+                'Exception {exception} occured when trying to decode the data'
+                'received RabbitMQ. So the message content will be put on '
+                'queue dead letter. Here are the content of the message : '
+                '{content}'.format(exception=exception_info, content=body))
+
         self.acknowledge_message(method.delivery_tag)
 
     def acknowledge_message(self, delivery_tag):
