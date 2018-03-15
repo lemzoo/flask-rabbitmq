@@ -17,14 +17,16 @@ class Worker:
         It will be closed after consuming the message on the given queue.
 
         :param ConnectionHandler connection : The connection to use between the
-         worker and RabbitMQ.
+            worker and RabbitMQ.
         :param Queue queue : The name of the queue to work
-        :param EventHandler event_handler: the event handler which execute the message
+        :param EventHandler event_handler: the event handler
+            which execute the message
         """
         self._connection = connection_handler.get_current_connection()
         self._queue = queue
-        self.event_handler = event_handler
-        self._worker_channel = WorkerChannel(self._connection, self._queue, self.event_handler)
+        self._event_handler = event_handler
+        self._worker_channel = WorkerChannel(self._connection, self._queue,
+                                             self._event_handler)
 
         self.logger = logging.getLogger('RabbitMQ-Worker')
 
