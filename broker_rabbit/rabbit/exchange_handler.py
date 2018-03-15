@@ -35,6 +35,7 @@ class ExchangeHandler:
         if self._channel is None:
             raise ChannelDoesntExist("The channel doesn't exist")
 
+        # Avoid to set an exchange name less than 3 chars. It's a bas practice.
         if len(self._exchange) < 3:
             raise ExchangeNameDoesntMatch("This exchange name doesn't match")
 
