@@ -6,8 +6,9 @@ from broker_rabbit.exceptions import UnknownEventError
 from broker_rabbit.rabbit.connection_handler import ConnectionHandler
 from broker_rabbit.rabbit.producer import Producer
 
-DEFAULT_URL = 'amqp://test:test@localhost:5672/sief-test'
-DEFAULT_EXCHANGE = 'SIEF'
+DEFAULT_URL = 'amqp://test:test@localhost:5672/foo-test'
+DEFAULT_EXCHANGE_NAME = 'FOO-EXCHANGE'
+DEFAULT_APPLICATION_ID = 'FOO-APPLICATION-ID'
 
 
 class BrokerRabbitMQ:
@@ -54,12 +55,14 @@ class BrokerRabbitMQ:
 
         config = config or app.config
         config.setdefault('RABBIT_MQ_URL', DEFAULT_URL)
-        config.setdefault('EXCHANGE_NAME', DEFAULT_EXCHANGE)
+        config.setdefault('EXCHANGE_NAME', DEFAULT_EXCHANGE_NAME)
+        config.setdefault('APPLICATION_ID', DEFAULT_APPLICATION_ID)
         config.setdefault('BROKER_AVAILABLE_EVENTS', [])
 
         self.events = config['BROKER_AVAILABLE_EVENTS']
         self.rabbit_url = config['RABBIT_MQ_URL']
         self.exchange_name = app.config['EXCHANGE_NAME']
+        self.app_id = app.config['APPLICATION_ID']
         self.queues = list({eh.queue for eh in self.event_manager.items})
 
         # Open Connection to RabbitMQ
@@ -67,7 +70,8 @@ class BrokerRabbitMQ:
         rabbit_connection = connection_handler.get_current_connection()
 
         # Setup default producer for rabbit
-        self._producer_for_rabbit = Producer(rabbit_connection, self.exchange_name)
+        self._producer_for_rabbit = Producer(rabbit_connection,
+                                             self.exchange_name, self.app_id)
         self._producer_for_rabbit.init_env_rabbit(self.queues)
 
     def send(self, event, origin, context={}):
