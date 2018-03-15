@@ -40,8 +40,9 @@ class ExchangeHandler:
             raise ExchangeNameDoesntMatch("This exchange name doesn't match")
 
         # Check Me : self._channel.basic_qos(prefetch_count=1)
-        self._channel.exchange_declare(exchange=self._exchange, type=self._type,
-                                       durable=self._durable, auto_delete=self._auto_delete)
+        self._channel.exchange_declare(
+            exchange=self._exchange, type=self._type,
+            durable=self._durable, auto_delete=self._auto_delete)
 
     def get_exchange_name(self):
         if self._exchange is None:
