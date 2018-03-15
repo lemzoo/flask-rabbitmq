@@ -1,6 +1,5 @@
-from broker_rabbit.exceptions import (ExchangeNameDoesntMatch,
-                                      ChannelDoesntExist,
-                                      ExchangeNotDefinedYet)
+from broker_rabbit.exceptions import (
+    ExchangeNameDoesntMatch, ChannelDoesntExist, ExchangeNotDefinedYet)
 
 
 class ExchangeHandler:
