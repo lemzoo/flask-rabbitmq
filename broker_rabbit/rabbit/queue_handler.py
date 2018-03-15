@@ -1,4 +1,5 @@
-from broker_rabbit.exceptions import ChannelDoesntExist, QueueNameDoesntMatch, ExchangeNotDefinedYet
+from broker_rabbit.exceptions import (
+    ChannelDoesntExist, QueueNameDoesntMatch, ExchangeNotDefinedYet)
 
 
 class QueueHandler:
