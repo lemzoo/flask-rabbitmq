@@ -121,9 +121,9 @@ class WorkerChannel(ChannelHandler):
 
 class ProducerChannel(ChannelHandler):
 
-    def __init__(self, connection):
+    def __init__(self, connection, app_id):
         super().__init__(connection)
-        self._basic_properties = get_basic_properties()
+        self._basic_properties = apply_basic_properties(app_id)
 
     def send_message(self, exchange, queue, message):
         msg_to_send = json.dumps(message)
@@ -132,15 +132,17 @@ class ProducerChannel(ChannelHandler):
         LOGGER.info('message was published successuffly into RabbitMQ')
 
 
-def get_basic_properties(app_id='SI-AEF', content_type='application/json', delivery_mode=2):
-    """Set the basic properties for RabbitMQ.
+def apply_basic_properties(app_id, content_type='application/json',
+                           delivery_mode=2):
+    """Apply the basic properties for RabbitMQ.
 
     :param str app_id : The id of the current app.
     :param str content_type : The content type of the message
-    :param int delivery_mode : The delivering mode for RabbitMQ. `2` means
-    the message will be persisted on the disk and `1` means the message will not be persisted.
+    :param int delivery_mode : The delivering mode for RabbitMQ.
+            `2` means the message will be persisted on the disk
+            `1` means the message will not be persisted.
     """
-    LOGGER.info('Setting the properties for RabbitMQ')
+    LOGGER.info('Applying the properties for RabbitMQ')
     properties = pika.BasicProperties(app_id=app_id, content_type=content_type,
                                       delivery_mode=delivery_mode)
     return properties
