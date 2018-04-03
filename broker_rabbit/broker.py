@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from broker_rabbit.event_handler import EventManager
-from broker_rabbit.exceptions import UnknownEventError
+from broker_rabbit.exceptions import UnknownQueueError
 
 from broker_rabbit.rabbit.connection_handler import ConnectionHandler
 from broker_rabbit.rabbit.producer import Producer
@@ -9,6 +9,7 @@ from broker_rabbit.rabbit.producer import Producer
 DEFAULT_URL = 'amqp://test:test@localhost:5672/foo-test'
 DEFAULT_EXCHANGE_NAME = 'FOO-EXCHANGE'
 DEFAULT_APPLICATION_ID = 'FOO-APPLICATION-ID'
+STATUS_READY = 'READY'
 
 
 class BrokerRabbitMQ:
@@ -16,91 +17,65 @@ class BrokerRabbitMQ:
     process for publishing and consuming messages.
     """
 
-    def __init__(self, app=None, **kwargs):
+    def __init__(self, app=None, queues=None):
         """Create a new instance of Broker Rabbit by using the given
         parameters to connect to RabbitMQ.
         """
         self.app = app
-        self.event_manager = None
-        self.events = None
-        self._producer_for_rabbit = None
-        self.disable_rabbit = None
-        self.rabbit_url = None
-        self.exchange_name = None
-        self.queues = None
+        self.queues = queues
+        self.producer = None
+        self.url = None
+        self.exchange = None
+        self.app_id = None
 
         if self.app is not None:
-            self.init_app(self.app, **kwargs)
+            self.init_app(self.app, self.queues)
 
-    def init_app(self, app, event_message_manager=[], config=None):
+    def init_app(self, app, queues):
         """ Init the Broker by using the given configuration instead
         default settings.
 
         :param app: Current application context
-        :param event_message_manager: Events handlers defined on the app
-        :param config: dictionnary of config parameters
+        :param list queues: Queues which the message will be post
         """
         if not hasattr(app, 'extensions'):
             app.extensions = {}
 
-        if 'broker' not in app.extensions:
-            app.extensions['broker'] = self
+        if 'broker_rabbit' not in app.extensions:
+            app.extensions['broker_rabbit'] = self
         else:
             # Raise an exception if extension already initialized as
             # potentially new configuration would not be loaded.
             raise RuntimeError('Extension already initialized')
 
-        self.app = app
-        self.event_manager = EventManager(event_message_manager)
-
-        config = config or app.config
-        config.setdefault('RABBIT_MQ_URL', DEFAULT_URL)
-        config.setdefault('EXCHANGE_NAME', DEFAULT_EXCHANGE_NAME)
-        config.setdefault('APPLICATION_ID', DEFAULT_APPLICATION_ID)
-        config.setdefault('BROKER_AVAILABLE_EVENTS', [])
-
-        self.events = config['BROKER_AVAILABLE_EVENTS']
-        self.rabbit_url = config['RABBIT_MQ_URL']
-        self.exchange_name = app.config['EXCHANGE_NAME']
-        self.app_id = app.config['APPLICATION_ID']
-        self.queues = list({eh.queue for eh in self.event_manager.items})
+        self.url = app.config.get('RABBIT_MQ_URL', DEFAULT_URL)
+        self.exchange = app.config.get('EXCHANGE_NAME', DEFAULT_EXCHANGE_NAME)
+        self.app_id = app.config.get('APPLICATION_ID', DEFAULT_APPLICATION_ID)
+        self.queues = queues
 
         # Open Connection to RabbitMQ
-        connection_handler = ConnectionHandler(self.rabbit_url)
-        rabbit_connection = connection_handler.get_current_connection()
+        connection_handler = ConnectionHandler(self.url)
+        connection = connection_handler.get_current_connection()
 
         # Setup default producer for rabbit
-        self._producer_for_rabbit = Producer(rabbit_connection,
-                                             self.exchange_name, self.app_id)
-        self._producer_for_rabbit.init_env_rabbit(self.queues)
+        self.producer = Producer(connection, self.exchange, self.app_id)
+        self.producer.init_env_rabbit(self.queues)
 
-    def send(self, event, origin, context={}):
-        """Notify the event_handlers who have subscribed to the given event
+    def send(self, queue, context={}):
+        """Post the message to the correct queue with the given context
 
-        :param event: event to trigger
-        :param origin: skip the event handlers with similar origin
-        :param context: dict of arbitrary data to transfer
+        :param str queue: queue which to post the message
+        :param dict context: content of the message to post to RabbitMQ server
         """
-        if event not in self.events:
-            raise UnknownEventError('Event %s is not registered' % event)
+        if queue not in self.queues:
+            raise UnknownQueueError('Queue ‘{queue}‘ is not registered'.format(
+                queue=queue))
 
-        event_manager_items = self.event_manager.filter(event)
-        for event_message in event_manager_items:
-            self.publish_message(event_message, context)
-
-    def publish_message(self, event_message, context):
-        """Route the message to the correct queue in RabbitMQ
-
-        :param event_message: the retrieved event on the Event Manager List
-        :param context: the content of the message
-        """
-        queue = event_message.queue
         message = {
             'created': datetime.utcnow().isoformat(),
+            'status': STATUS_READY,
             'queue': queue,
-            'label': event_message.label,
-            'json_context': context,
-            'status': 'READY',
+            'context': context
         }
 
-        return self._producer_for_rabbit.publish(queue, message)
+        return self.producer.publish(queue, message)
