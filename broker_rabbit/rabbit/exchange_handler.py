@@ -14,9 +14,9 @@ class ExchangeHandler:
 
         :param ChannelHandler channel: The given channel to connect to RabbitMQ
         :param str exchange_name : The name of the exchange to set
-        :param str : exchange_type : The type of exchange.
-            By default, the exchange is direct type to allow simple routing
-            via the queue name.
+        :param str exchange_type : The type of exchange.
+            By default, the exchange is set to direct type to allow simple
+            routing via the queue name.
             Here are the type of exchange : direct - fanout - topic.
         :param boolean durable : The durability of the exchange.
             Durable exchange remain active when a server restarts.
@@ -35,7 +35,7 @@ class ExchangeHandler:
         if self._channel is None:
             raise ChannelDoesntExist("The channel doesn't exist")
 
-        # Avoid to set an exchange name less than 3 chars. It's a bas practice.
+        # Avoid to set an exchange name less than 3 chars. It's a bad practice.
         if len(self._exchange) < 3:
             raise ExchangeNameDoesntMatch("This exchange name doesn't match")
 
