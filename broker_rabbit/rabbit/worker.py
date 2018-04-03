@@ -10,23 +10,22 @@ class Worker:
     close the current channel.
     """
 
-    def __init__(self, connection_handler, queue, event_handler):
+    def __init__(self, connection_handler, queue, on_message_callback):
         """
         Instantiate a Worker with an opened connection and a queue name to work
         The channel is opened in the instantiation of the module for ready use.
         It will be closed after consuming the message on the given queue.
 
-        :param ConnectionHandler connection : The connection to use between the
-            worker and RabbitMQ.
-        :param Queue queue : The name of the queue to work
-        :param EventHandler event_handler: the event handler
-            which execute the message
+        :param ConnectionHandler connection_handler : The connection to use
+            between the worker and RabbitMQ.
+        :param str queue : The name of the queue which to consume message
+        :param callback on_message_callback: the callback to call when message
+            is received from RabbitMQ
         """
         self._connection = connection_handler.get_current_connection()
         self._queue = queue
-        self._event_handler = event_handler
         self._worker_channel = WorkerChannel(self._connection, self._queue,
-                                             self._event_handler)
+                                             on_message_callback)
 
         self.logger = logging.getLogger('RabbitMQ-Worker')
 
