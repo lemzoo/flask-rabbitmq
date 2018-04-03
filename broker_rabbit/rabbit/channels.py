@@ -6,7 +6,6 @@ from broker_rabbit.exceptions import (
     ConnectionNotOpenedYet, ChannelDoesntExist,
     WorkerExitException, ConnectionIsClosed)
 
-
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
 LOGGER = logging.getLogger(__name__)
@@ -56,13 +55,13 @@ class ChannelHandler:
 
 class WorkerChannel(ChannelHandler):
 
-    def __init__(self, connection, queue, event_handler):
+    def __init__(self, connection, queue, on_message_callback):
         super().__init__(connection)
-        self.queue = queue
-        self.event_handler = event_handler
+        self._queue = queue
+        self._on_message_callback = on_message_callback
 
     def run(self):
-        LOGGER.info('Consuming message on queue : %s', self.queue)
+        LOGGER.info('Consuming message on queue : %s', self._queue)
 
         try:
             """The queue can be non exist on rabbit, so ChannelClosed exception
@@ -72,7 +71,7 @@ class WorkerChannel(ChannelHandler):
             """
             self.open()
             self.add_on_cancel_callback()
-            self._channel.basic_consume(self.on_message, self.queue)
+            self._channel.basic_consume(self.on_message, self._queue)
             LOGGER.info(' [*] Waiting for messages. To exit press CTRL+C')
             self._channel.start_consuming()
         except KeyboardInterrupt:
@@ -82,7 +81,7 @@ class WorkerChannel(ChannelHandler):
             self.close()
 
     def consume_one_message(self):
-        method, header, body = self._channel.basic_get(self.queue)
+        method, header, body = self._channel.basic_get(self._queue)
         if not method or method.NAME == 'Basic.GetEmpty':
             return False
         else:
@@ -93,11 +92,11 @@ class WorkerChannel(ChannelHandler):
         try:
             msg_received = body.decode()
             LOGGER.info('Received message # %s #', msg_received)
-            self.event_handler.process_message(msg_received)
+            self._on_message_callback(msg_received)
         except Exception as exception_info:
             # TODO: handle dead letter
             LOGGER.error(
-                'Exception {exception} occured when trying to decode the data'
+                'Exception {exception} occurred when trying to decode the data'
                 'received RabbitMQ. So the message content will be put on '
                 'queue dead letter. Here are the content of the message : '
                 '{content}'.format(exception=exception_info, content=body))
@@ -121,29 +120,30 @@ class WorkerChannel(ChannelHandler):
 
 class ProducerChannel(ChannelHandler):
 
-    def __init__(self, connection, app_id):
+    def __init__(self, connection, application_id):
         super().__init__(connection)
-        self._basic_properties = apply_basic_properties(app_id)
+        self._basic_properties = apply_basic_properties(application_id)
 
     def send_message(self, exchange, queue, message):
         msg_to_send = json.dumps(message)
         self._channel.basic_publish(
             exchange=exchange, routing_key=queue,
             body=msg_to_send, properties=self._basic_properties)
-        LOGGER.info('message was published successuffly into RabbitMQ')
+        LOGGER.info('message was published successfully into RabbitMQ')
 
 
-def apply_basic_properties(app_id, content_type='application/json',
+def apply_basic_properties(application_id, content_type='application/json',
                            delivery_mode=2):
     """Apply the basic properties for RabbitMQ.
 
-    :param str app_id : The id of the current app.
+    :param str application_id : The id of the current app.
     :param str content_type : The content type of the message
     :param int delivery_mode : The delivering mode for RabbitMQ.
             `2` means the message will be persisted on the disk
             `1` means the message will not be persisted.
     """
     LOGGER.info('Applying the properties for RabbitMQ')
-    properties = pika.BasicProperties(app_id=app_id, content_type=content_type,
+    properties = pika.BasicProperties(app_id=application_id,
+                                      content_type=content_type,
                                       delivery_mode=delivery_mode)
     return properties
