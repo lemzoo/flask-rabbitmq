@@ -21,7 +21,7 @@ class ConnectionHandler:
 
         :param app: Current application context
         :param integer timeout: Timeout for handling the conection.
-        By default, it's 0.25 seconds. It's not recommended to keep 0.25
+        By default, it's 0.25 seconds. It's not recommended to keep it to 0.25
         """
 
         self.parameters = pika.URLParameters(rabbit_url)

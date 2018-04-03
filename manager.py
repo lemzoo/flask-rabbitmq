@@ -1,5 +1,3 @@
-#! /usr/bin/env python3
-
 from flask_script import Manager, Server, Shell
 
 from main import bootstrap_app

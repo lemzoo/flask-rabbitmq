@@ -10,7 +10,7 @@ class UserRegistrationAPI(Resource):
     """API for registration or listing user"""
 
     def get(self):
-        raise NotImplementedError('API `GET` a list of user is not implemented yet')
+        raise NotImplementedError('GET a list of user is not implemented')
 
     def post(self):
         payload = request.get_json()

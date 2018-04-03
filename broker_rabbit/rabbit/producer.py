@@ -9,14 +9,14 @@ class Producer:
 
     """
 
-    def __init__(self, connection, exchange_name, app=None, **kwargs):
+    def __init__(self, connection, exchange_name, app_id, app=None, **kwargs):
         self._exchange_name = exchange_name
-        self._producer_channel = ProducerChannel(connection)
+        self._producer_channel = ProducerChannel(connection, app_id)
 
     def init_env_rabbit(self, queues):
         """Initialize the queue on RabbitMQ
 
-        :param list queues: List of queue to setup on rabbit by using default exchange
+        :param list queues: List of queue to setup on rabbit
         """
         self._producer_channel.open()
         try:
@@ -38,6 +38,7 @@ class Producer:
         """
         self._producer_channel.open()
         try:
-            self._producer_channel.send_message(self._exchange_name, queue, message)
+            self._producer_channel.send_message(self._exchange_name,
+                                                queue, message)
         finally:
             self._producer_channel.close()

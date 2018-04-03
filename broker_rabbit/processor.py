@@ -3,7 +3,9 @@ from broker_rabbit.exceptions import UnknownProcessorError
 
 class ProcessorManager:
 
-    """Hold a list of processor (i.e. functions) a worker can apply to a message."""
+    """
+    Hold a list of processor (i.e. functions) a worker can apply to a message.
+    """
 
     def __init__(self):
         self._processors = {}

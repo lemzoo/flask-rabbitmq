@@ -1,6 +1,3 @@
-from broker_rabbit.processor import find_and_execute
-
-
 class EventError(Exception):
     pass
 
@@ -39,9 +36,7 @@ class EventManager:
         self.count_received_msg = 0
 
     def process_message(self, received_msg):
-        self.count_received_msg += 1
-        print('Received message number `%s`, content = {%s}' % (self.count_received_msg, received_msg))
-        # find_and_execute(handler.processor, handler, msg)
+        print('Received message with content = {%s}' % received_msg)
 
     def get(self, label, default=None):
         try:
