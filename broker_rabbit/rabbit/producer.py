@@ -9,7 +9,7 @@ class Producer:
 
     """
 
-    def __init__(self, connection, exchange_name, app_id, app=None, **kwargs):
+    def __init__(self, connection, exchange_name, app_id):
         self._exchange_name = exchange_name
         self._producer_channel = ProducerChannel(connection, app_id)
 

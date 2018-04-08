@@ -2,6 +2,10 @@ class BrokerRabbitException(Exception):
     pass
 
 
+class UnknownQueueError(BrokerRabbitException):
+    pass
+
+
 class ExchangeNotDefinedYet(BrokerRabbitException):
     pass
 

@@ -15,16 +15,17 @@ class ConnectionHandler:
         self.parameters = None
         self.init_connection(rabbit_url)
 
-    def init_connection(self, rabbit_url, timeout=5):
+    def init_connection(self, url, timeout=5):
         """Setup the publisher object, passing in the host, port, user id and
         the password to create a parameters objects to connect to RabbitMQ.
 
-        :param app: Current application context
-        :param integer timeout: Timeout for handling the conection.
-        By default, it's 0.25 seconds. It's not recommended to keep it to 0.25
+        :param str url: url for RabbitMQ server
+        :param int timeout: Timeout for handling the connection.
+            By default, it's 0.25 seconds.
+            It's not recommended to keep it to 0.25. So, we change it to 5.
         """
 
-        self.parameters = pika.URLParameters(rabbit_url)
+        self.parameters = pika.URLParameters(url)
         self.parameters.heartbeat = 0
         self.parameters.socket_timeout = timeout
         self._connection = pika.BlockingConnection(self.parameters)
