@@ -11,6 +11,10 @@ LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
 LOGGER = logging.getLogger(__name__)
 
 
+class CallBackError(Exception):
+    pass
+
+
 class ChannelHandler:
     """This is a  Channel Handler which use the connection handler to get a new
     channel to allow the client to communicate with RabbitMQ.
