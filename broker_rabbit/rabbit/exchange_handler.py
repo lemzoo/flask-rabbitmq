@@ -1,5 +1,4 @@
-from broker_rabbit.exceptions import (
-    ExchangeNameDoesntMatch, ChannelDoesntExist, ExchangeNotDefinedYet)
+from broker_rabbit.exceptions import ChannelDoesntExist, ExchangeNotDefinedYet
 
 
 class ExchangeHandler:
@@ -35,10 +34,6 @@ class ExchangeHandler:
         if self._channel is None:
             raise ChannelDoesntExist("The channel doesn't exist")
 
-        # Avoid to set an exchange name less than 3 chars. It's a bad practice.
-        if len(self._exchange) < 3:
-            raise ExchangeNameDoesntMatch("This exchange name doesn't match")
-
         # Check Me : self._channel.basic_qos(prefetch_count=1)
         self._channel.exchange_declare(
             exchange=self._exchange, type=self._type,
@@ -47,4 +42,5 @@ class ExchangeHandler:
     def get_exchange_name(self):
         if self._exchange is None:
             raise ExchangeNotDefinedYet("The exchange is not defined")
+
         return self._exchange
