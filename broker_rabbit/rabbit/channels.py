@@ -94,9 +94,8 @@ class WorkerChannel(ChannelHandler):
 
     def on_message(self, channel, method, properties, body):
         try:
-            msg_received = body.decode()
-            LOGGER.info('Received message # %s #', msg_received)
-            self._on_message_callback(msg_received)
+            decoded_message = body.decode()
+            self.bind_callback(decoded_message)
         except Exception as exception_info:
             # TODO: handle dead letter
             LOGGER.error(
