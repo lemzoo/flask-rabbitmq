@@ -1,6 +1,3 @@
-from broker_rabbit.exceptions import UnknownProcessorError
-
-
 class ProcessorManager:
 
     """
@@ -35,6 +32,10 @@ class ProcessorManager:
 
     def list(self):
         return list(self._processors.keys())
+
+
+class UnknownProcessorError(Exception):
+    pass
 
 
 processor_manager = ProcessorManager()
