@@ -36,6 +36,12 @@ class Producer:
         :param str queue : The queue name which to publish the given message
         :param dict message : The message to publish in RabbitMQ
         """
+
+        if queue not in self._queues:
+            raise QueueDoesNotExist(
+                'This queue ’{queue}’ is not declared. Please call '
+                'init_env_rabbit before using publish'.format(queue=queue))
+
         self._producer_channel.open()
         try:
             self._producer_channel.send_message(self._exchange_name,
