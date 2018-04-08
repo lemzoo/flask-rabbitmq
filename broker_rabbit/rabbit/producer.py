@@ -1,3 +1,4 @@
+from broker_rabbit.exceptions import QueueDoesNotExist
 from broker_rabbit.rabbit.channels import ProducerChannel
 from broker_rabbit.rabbit.exchange_handler import ExchangeHandler
 from broker_rabbit.rabbit.queue_handler import QueueHandler
@@ -12,6 +13,7 @@ class Producer:
     def __init__(self, connection, exchange_name, app_id):
         self._exchange_name = exchange_name
         self._producer_channel = ProducerChannel(connection, app_id)
+        self._queues = None
 
     def init_env_rabbit(self, queues):
         """Initialize the queue on RabbitMQ
@@ -28,6 +30,7 @@ class Producer:
             queue_handler = QueueHandler(channel, self._exchange_name)
             queue_handler.setup_queues(queues)
         finally:
+            self._queues = queues
             self._producer_channel.close()
 
     def publish(self, queue, message):
