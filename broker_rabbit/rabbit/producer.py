@@ -10,9 +10,10 @@ class Producer:
 
     """
 
-    def __init__(self, connection, exchange_name, app_id):
+    def __init__(self, connection, exchange_name, app_id, delivery_mode):
         self._exchange_name = exchange_name
-        self._producer_channel = ProducerChannel(connection, app_id)
+        self._producer_channel = ProducerChannel(connection, app_id,
+                                                 delivery_mode)
         self._queues = None
 
     def init_env_rabbit(self, queues):

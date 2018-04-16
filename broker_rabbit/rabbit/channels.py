@@ -137,9 +137,10 @@ class WorkerChannel(ChannelHandler):
 
 class ProducerChannel(ChannelHandler):
 
-    def __init__(self, connection, application_id):
+    def __init__(self, connection, application_id, delivery_mode):
         super().__init__(connection)
-        self._basic_properties = apply_basic_properties(application_id)
+        self._basic_properties = apply_basic_properties(application_id,
+                                                        delivery_mode)
 
     def send_message(self, exchange, queue, message):
         msg_to_send = json.dumps(message)
@@ -149,8 +150,8 @@ class ProducerChannel(ChannelHandler):
         LOGGER.info('message was published successfully into RabbitMQ')
 
 
-def apply_basic_properties(application_id, content_type='application/json',
-                           delivery_mode=2):
+def apply_basic_properties(application_id, delivery_mode,
+                           content_type='application/json'):
     """Apply the basic properties for RabbitMQ.
 
     :param str application_id : The id of the current app.
