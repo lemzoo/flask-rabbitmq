@@ -2,8 +2,8 @@ from flask import current_app
 from flask_script import Manager
 
 from broker_rabbit.exceptions import BrokerRabbitException
-from broker_rabbit.rabbit.worker import Worker
-from broker_rabbit.rabbit.connection_handler import ConnectionHandler
+from broker_rabbit import Worker
+from broker_rabbit.connection_handler import ConnectionHandler
 
 broker_rabbit_manager = Manager(usage="Perform broker rabbitmq operations")
 

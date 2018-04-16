@@ -1,7 +1,7 @@
 from broker_rabbit.exceptions import QueueDoesNotExist
-from broker_rabbit.rabbit.channels import ProducerChannel
-from broker_rabbit.rabbit.exchange_handler import ExchangeHandler
-from broker_rabbit.rabbit.queue_handler import QueueHandler
+from broker_rabbit import ProducerChannel
+from broker_rabbit.exchange_handler import ExchangeHandler
+from broker_rabbit.queue_handler import QueueHandler
 
 
 class Producer:

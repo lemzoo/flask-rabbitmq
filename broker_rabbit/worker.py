@@ -1,6 +1,6 @@
 import logging
 
-from broker_rabbit.rabbit.channels import WorkerChannel
+from broker_rabbit import WorkerChannel
 
 
 class Worker:

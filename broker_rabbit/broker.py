@@ -2,8 +2,8 @@ from datetime import datetime
 
 from broker_rabbit.exceptions import UnknownQueueError
 
-from broker_rabbit.rabbit.connection_handler import ConnectionHandler
-from broker_rabbit.rabbit.producer import Producer
+from broker_rabbit.connection_handler import ConnectionHandler
+from broker_rabbit import Producer
 
 DEFAULT_URL = 'amqp://test:test@localhost:5672/foo-test'
 DEFAULT_EXCHANGE_NAME = 'FOO-EXCHANGE'
