@@ -3,7 +3,7 @@ from datetime import datetime
 from broker_rabbit.exceptions import UnknownQueueError
 
 from broker_rabbit.connection_handler import ConnectionHandler
-from broker_rabbit import Producer
+from broker_rabbit.producer import Producer
 
 DEFAULT_URL = 'amqp://test:test@localhost:5672/foo-test'
 DEFAULT_EXCHANGE_NAME = 'FOO-EXCHANGE'
@@ -25,9 +25,10 @@ class BrokerRabbitMQ:
         self.connection_handler = None
         self.producer = None
         self.url = None
-        self.exchange = None
-        self.app_id = None
-        self.delivery = None
+        self.exchange_name = None
+        self.application_id = None
+        self.delivery_mode = None
+        self.on_message_callback = None
 
         if self.app is not None:
             self.init_app(self.app, self.queues)
@@ -50,9 +51,9 @@ class BrokerRabbitMQ:
             raise RuntimeError('Extension already initialized')
 
         self.url = app.config.get('RABBIT_MQ_URL', DEFAULT_URL)
-        self.exchange = app.config.get('EXCHANGE_NAME', DEFAULT_EXCHANGE_NAME)
-        self.app_id = app.config.get('APPLICATION_ID', DEFAULT_APPLICATION_ID)
-        self.delivery = app.config.get('DELIVERY_MODE', DEFAULT_DELIVERY_MODE)
+        self.exchange_name = app.config.get('EXCHANGE_NAME', DEFAULT_EXCHANGE_NAME)
+        self.application_id = app.config.get('APPLICATION_ID', DEFAULT_APPLICATION_ID)
+        self.delivery_mode = app.config.get('DELIVERY_MODE', DEFAULT_DELIVERY_MODE)
         self.queues = queues
 
         # Open Connection to RabbitMQ
@@ -62,8 +63,9 @@ class BrokerRabbitMQ:
         connection = self.connection_handler.get_current_connection()
 
         # Setup default producer for rabbit
-        self.producer = Producer(connection, self.exchange,
-                                 self.app_id, self.delivery)
+        self.producer = Producer(
+            connection, self.exchange_name, self.exchange_type,
+            self.application_id, self.delivery_mode)
         self.producer.init_env_rabbit(self.queues)
 
     def send(self, queue, context={}):
