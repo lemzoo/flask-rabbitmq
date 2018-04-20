@@ -33,10 +33,11 @@ class EventManager:
 
     def __init__(self, handlers):
         self.items = [EventMessage(eh) for eh in handlers]
-        self.count_received_msg = 0
 
-    def process_message(self, received_msg):
-        print('Received message with content = {%s}' % received_msg)
+    @staticmethod
+    def process_message(message):
+        print('Message Content = ’{content}’'.format(content=message))
+        sleep(2)
 
     def get(self, label, default=None):
         try:
