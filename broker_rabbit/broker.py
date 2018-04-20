@@ -60,8 +60,6 @@ class BrokerRabbitMQ:
         self.on_message_callback = on_message_callback
 
         # Open Connection to RabbitMQ
-        connection_handler = ConnectionHandler(self.url)
-        connection = connection_handler.get_current_connection()
         self.connection_handler = ConnectionHandler(self.url)
         connection = self.connection_handler.get_current_connection()
 
@@ -78,11 +76,11 @@ class BrokerRabbitMQ:
         :param dict context: content of the message to post to RabbitMQ server
         """
         if queue not in self.queues:
-            message = 'Queue ‘{queue}‘ is not registered'.format(queue=queue)
+            message = 'Queue ‘{name}‘ is not registered'.format(name=queue)
             raise UnknownQueueError(message)
 
         message = {
-            'created': datetime.utcnow().isoformat(),
+            'created_at': datetime.utcnow().isoformat(),
             'status': STATUS_READY,
             'queue': queue,
             'context': context
