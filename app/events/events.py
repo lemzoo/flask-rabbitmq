@@ -99,9 +99,9 @@ class Event:
         else:
             return self.name == other
 
-    def send(self, origin=None, **kwargs):
+    def send(self, **kwargs):
         broker = current_app.extensions['broker']
-        return broker.send(self.name, origin=origin, context=kwargs)
+        return broker.send(queue='user', context=kwargs)
 
 
 class EventTree(Tree):
