@@ -1,5 +1,5 @@
 from broker_rabbit.exceptions import QueueDoesNotExist
-from broker_rabbit import ProducerChannel
+from broker_rabbit.channels import ProducerChannel
 from broker_rabbit.exchange_handler import ExchangeHandler
 from broker_rabbit.queue_handler import QueueHandler
 
@@ -10,10 +10,11 @@ class Producer:
 
     """
 
-    def __init__(self, connection, exchange_name, app_id, delivery_mode):
+    def __init__(self, connection, exchange_name,
+                 application_id, delivery_mode):
         self._exchange_name = exchange_name
-        self._producer_channel = ProducerChannel(connection, app_id,
-                                                 delivery_mode)
+        self._producer_channel = ProducerChannel(
+            connection, application_id, delivery_mode)
         self._queues = None
 
     def init_env_rabbit(self, queues):
