@@ -11,6 +11,10 @@ LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
 LOGGER = logging.getLogger(__name__)
 
 
+class CallBackError(Exception):
+    pass
+
+
 class ChannelHandler:
     """This is a  Channel Handler which use the connection handler to get a new
     channel to allow the client to communicate with RabbitMQ.
@@ -88,11 +92,22 @@ class WorkerChannel(ChannelHandler):
             self.on_message(self._channel, method, header, body)
             return True
 
+    def bind_callback(self, raw_message):
+        try:
+            message = json.loads(raw_message)
+            self._on_message_callback(message)
+            LOGGER.info('Received message # %s #', message)
+        except (AttributeError, TypeError):
+            LOGGER.info('Error on the callback definition. Message is not '
+                        'acknowledge. And it will be keep on the RabbitMQ')
+            raise CallBackError(
+                'You should implement your callback with these arguments like '
+                'my_callback(created_at, status, content)')
+
     def on_message(self, channel, method, properties, body):
         try:
-            msg_received = body.decode()
-            LOGGER.info('Received message # %s #', msg_received)
-            self._on_message_callback(msg_received)
+            decoded_message = body.decode()
+            self.bind_callback(decoded_message)
         except Exception as exception_info:
             # TODO: handle dead letter
             LOGGER.error(
@@ -120,9 +135,10 @@ class WorkerChannel(ChannelHandler):
 
 class ProducerChannel(ChannelHandler):
 
-    def __init__(self, connection, application_id):
+    def __init__(self, connection, application_id, delivery_mode):
         super().__init__(connection)
-        self._basic_properties = apply_basic_properties(application_id)
+        self._basic_properties = apply_basic_properties(application_id,
+                                                        delivery_mode)
 
     def send_message(self, exchange, queue, message):
         msg_to_send = json.dumps(message)
@@ -132,8 +148,8 @@ class ProducerChannel(ChannelHandler):
         LOGGER.info('message was published successfully into RabbitMQ')
 
 
-def apply_basic_properties(application_id, content_type='application/json',
-                           delivery_mode=2):
+def apply_basic_properties(application_id, delivery_mode,
+                           content_type='application/json'):
     """Apply the basic properties for RabbitMQ.
 
     :param str application_id : The id of the current app.

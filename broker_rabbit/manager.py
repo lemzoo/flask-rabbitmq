@@ -2,8 +2,8 @@ from flask import current_app
 from flask_script import Manager
 
 from broker_rabbit.exceptions import BrokerRabbitException
-from broker_rabbit.rabbit.worker import Worker
-from broker_rabbit.rabbit.connection_handler import ConnectionHandler
+from broker_rabbit.worker import Worker
+from broker_rabbit.connection_handler import ConnectionHandler
 
 broker_rabbit_manager = Manager(usage="Perform broker rabbitmq operations")
 
@@ -33,11 +33,12 @@ def start(queue):
     broker = _get_broker_extension()
 
     if queue not in broker.queues:
-        raise RuntimeError('This queue `%s` is not found' % queue)
+        raise RuntimeError('This queue `{name}` is not found'.format(name=queue))
 
     on_message_callback = broker.on_message_callback
-    connection_handler = ConnectionHandler(broker.url)
+    connection_handler = broker.connection_handler
+    connection = connection_handler.get_current_connection()
 
     worker = Worker(connection_handler, queue, on_message_callback)
-    print('Start consuming message on the queue `%s`' % queue)
+    print('Start consuming message on the queue `{name}'.format(name=queue))
     worker.consume_message()

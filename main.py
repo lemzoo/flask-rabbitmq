@@ -1,7 +1,6 @@
 from os.path import abspath, dirname
 
 from flask import Flask
-from flask_mongoengine import MongoEngine
 
 
 class CoreApp(Flask):
@@ -12,10 +11,10 @@ class CoreApp(Flask):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.root_path = abspath(dirname(__file__))
-        self.db = MongoEngine()
 
     def bootstrap(self):
-        self.db.init_app(self)
+        # self.db.init_app(self)
+        pass
 
 
 def create_app(config=None):

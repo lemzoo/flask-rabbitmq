@@ -5,6 +5,7 @@ Centralize the events
 from flask import current_app
 
 from app.events.events_handler_template import EVENT_MESSAGE_MANAGER
+from broker.event_handler import EventManager
 from broker_rabbit.broker import BrokerRabbitMQ
 
 
@@ -99,9 +100,9 @@ class Event:
         else:
             return self.name == other
 
-    def send(self, origin=None, **kwargs):
+    def send(self, **kwargs):
         broker = current_app.extensions['broker']
-        return broker.send(self.name, origin=origin, context=kwargs)
+        return broker.send(queue='user', context=kwargs)
 
 
 class EventTree(Tree):
@@ -119,9 +120,17 @@ EVENTS = EventTree(
 
 def init_events(app):
     app.config['BROKER_AVAILABLE_EVENTS'] = [e.name for e in EVENTS]
-    event_handlers = EVENT_MESSAGE_MANAGER.copy()
+    event_handler_items = EVENT_MESSAGE_MANAGER.copy()
+
+    queues = []
+    for item in event_handler_items:
+        queue = item['queue']
+        if queue not in queues:
+            queues.append(queue)
 
     broker = BrokerRabbitMQ()
-    broker.init_app(app, event_handlers)
+    on_message_callback = EventManager.process_message
+    broker.init_app(app, queues, on_message_callback)
+    app.extensions['broker'] = broker
 
-    return event_handlers
+    return event_handler_items
