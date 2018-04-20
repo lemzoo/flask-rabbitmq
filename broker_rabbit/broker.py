@@ -65,7 +65,7 @@ class BrokerRabbitMQ:
 
         # Setup default producer for rabbit
         self.producer = Producer(
-            connection, self.exchange_name, self.exchange_type,
+            connection, self.exchange_name,
             self.application_id, self.delivery_mode)
         self.producer.init_env_rabbit(self.queues)
 
