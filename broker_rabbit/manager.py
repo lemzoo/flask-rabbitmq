@@ -36,8 +36,9 @@ def start(queue):
         raise RuntimeError('This queue `{name}` is not found'.format(name=queue))
 
     on_message_callback = broker.on_message_callback
-    connection_handler = ConnectionHandler(broker.url)
+    connection_handler = broker.connection_handler
+    connection = connection_handler.get_current_connection()
 
     worker = Worker(connection_handler, queue, on_message_callback)
-    print('Start consuming message on the queue `%s`' % queue)
+    print('Start consuming message on the queue `{name}'.format(name=queue))
     worker.consume_message()
