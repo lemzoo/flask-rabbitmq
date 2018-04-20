@@ -13,7 +13,8 @@ class CoreApp(Flask):
         self.root_path = abspath(dirname(__file__))
 
     def bootstrap(self):
-        self.db.init_app(self)
+        # self.db.init_app(self)
+        pass
 
 
 def create_app(config=None):

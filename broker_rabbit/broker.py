@@ -81,7 +81,6 @@ class BrokerRabbitMQ:
 
         message = {
             'created_at': datetime.utcnow().isoformat(),
-            'status': STATUS_READY,
             'queue': queue,
             'context': context
         }

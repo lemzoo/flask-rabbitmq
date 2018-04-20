@@ -1,4 +1,4 @@
-from flask import, request
+from flask import request
 from flask_restful import Resource
 
 from app.events.events import EVENTS as event_managers
