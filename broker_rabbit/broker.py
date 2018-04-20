@@ -33,12 +33,14 @@ class BrokerRabbitMQ:
         if self.app is not None:
             self.init_app(self.app, self.queues)
 
-    def init_app(self, app, queues):
+    def init_app(self, app, queues, on_message_callback):
         """ Init the Broker by using the given configuration instead
         default settings.
 
         :param app: Current application context
         :param list queues: Queues which the message will be post
+        :param callback on_message_callback: callback to execute when new
+        message is pulled to RabbitMQ
         """
         if not hasattr(app, 'extensions'):
             app.extensions = {}
@@ -55,6 +57,7 @@ class BrokerRabbitMQ:
         self.application_id = app.config.get('APPLICATION_ID', DEFAULT_APPLICATION_ID)
         self.delivery_mode = app.config.get('DELIVERY_MODE', DEFAULT_DELIVERY_MODE)
         self.queues = queues
+        self.on_message_callback = on_message_callback
 
         # Open Connection to RabbitMQ
         connection_handler = ConnectionHandler(self.url)
