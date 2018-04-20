@@ -92,12 +92,10 @@ class WorkerChannel(ChannelHandler):
             self.on_message(self._channel, method, header, body)
             return True
 
-    def bind_callback(self, message):
+    def bind_callback(self, raw_message):
         try:
-            created_at = message['created_at']
-            status = 'PULLED'
-            content = message['context']
-            self._on_message_callback(created_at, status, content)
+            message = json.loads(raw_message)
+            self._on_message_callback(message)
             LOGGER.info('Received message # %s #', message)
         except (AttributeError, TypeError):
             LOGGER.info('Error on the callback definition. Message is not '
