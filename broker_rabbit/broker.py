@@ -22,6 +22,7 @@ class BrokerRabbitMQ:
         """
         self.app = app
         self.queues = queues
+        self.connection_handler = None
         self.producer = None
         self.url = None
         self.exchange = None
@@ -57,6 +58,8 @@ class BrokerRabbitMQ:
         # Open Connection to RabbitMQ
         connection_handler = ConnectionHandler(self.url)
         connection = connection_handler.get_current_connection()
+        self.connection_handler = ConnectionHandler(self.url)
+        connection = self.connection_handler.get_current_connection()
 
         # Setup default producer for rabbit
         self.producer = Producer(connection, self.exchange,
