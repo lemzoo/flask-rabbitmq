@@ -1,3 +1,6 @@
+from time import sleep
+
+
 class EventError(Exception):
     pass
 
