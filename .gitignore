@@ -27,6 +27,7 @@ var/
 *.egg
 .ropeproject/
 .python-version
+.pytest*
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

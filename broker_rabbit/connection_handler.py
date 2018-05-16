@@ -16,6 +16,7 @@ class ConnectionHandler:
         self.init_connection(rabbit_url)
 
     def init_connection(self, url, timeout=5):
+        # TODO: add ssl certification
         """Setup the publisher object, passing in the host, port, user id and
         the password to create a parameters objects to connect to RabbitMQ.
 

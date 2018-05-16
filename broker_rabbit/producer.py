@@ -17,7 +17,7 @@ class Producer:
             connection, application_id, delivery_mode)
         self._queues = None
 
-    def init_env_rabbit(self, queues):
+    def bootstrap(self, queues):
         """Initialize the queue on RabbitMQ
 
         :param list queues: List of queue to setup on rabbit
