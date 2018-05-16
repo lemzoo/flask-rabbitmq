@@ -67,7 +67,7 @@ class BrokerRabbitMQ:
         self.producer = Producer(
             connection, self.exchange_name,
             self.application_id, self.delivery_mode)
-        self.producer.init_env_rabbit(self.queues)
+        self.producer.bootstrap(self.queues)
 
     def send(self, queue, context={}):
         """Post the message to the correct queue with the given context

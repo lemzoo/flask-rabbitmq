@@ -3,3 +3,5 @@ Flask-RESTful==0.3.4
 flask-marshmallow==0.6.0
 pika==0.10.0
 Flask-Script
+pytest==3.5.1
+pyrabbit==1.1.0
