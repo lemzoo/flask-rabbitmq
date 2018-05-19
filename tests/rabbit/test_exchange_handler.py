@@ -2,51 +2,57 @@ from unittest.mock import Mock
 
 import pytest
 
-from broker.broker_rabbit.exceptions import (ExchangeNameDoesntMatch,
-                                             ChannelDoesntExist,
-                                             ExchangeNotDefinedYet)
-from broker.broker_rabbit.rabbit import ExchangeHandler
+from broker_rabbit.exceptions import ChannelNotDefinedError, ExchangeNotDefinedYet
+from broker_rabbit.exchange_handler import ExchangeHandler
 
 
 @pytest.mark.unit_test
 class TestExchangeHandler:
-    def test_setup_exchange(self):
-        channel = Mock()
-        exchange_name = 'TEST_EXCHANGE_NAME'
-        exchange_type = 'TEST_TYPE_EXCHANGE'
-        durable = True
-        auto_delete = False
-        exchange_handler = ExchangeHandler(channel, exchange_name, exchange_type,
-                                           durable, auto_delete)
+    def test_raises_when_channel_is_not_defined(self):
+        # Given
+        channel = None
+        exchange_name = 'TEST-EXCHANGE-NAME'
 
-        exchange_handler.setup_exchange()
-
-        exchange_handler._channel.exchange_declare.assert_called_with(
-            exchange=exchange_name, exchange_type=exchange_type, durable=durable, auto_delete=auto_delete)
-
-    def test_setup_exchange_without_channel(self):
-        exchange_handler = ExchangeHandler(None)
-
-        with pytest.raises(ChannelDoesntExist):
-            exchange_handler.setup_exchange()
-
-    def test_setup_exchange_with_short_exchange_name(self):
-        channel = Mock()
-        exchange_name = '-'
+        # When
         exchange_handler = ExchangeHandler(channel, exchange_name)
 
-        with pytest.raises(ExchangeNameDoesntMatch):
+        with pytest.raises(ChannelNotDefinedError) as error:
             exchange_handler.setup_exchange()
 
-    def test_get_exchange_name(self):
-        exchange_name = 'TEST_EXCHANGE_NAME'
-        exchange_handler = ExchangeHandler(None, exchange_name)
+        # Then
+        assert 'The channel was not defined' == error.value.args[0]
 
-        ret = exchange_handler.get_exchange_name()
-        assert ret == exchange_name
+    def test_should_setup_exchange_via_channel(self):
+        # Given
+        channel = Mock()
+        exchange_name = 'TEST-EXCHANGE-NAME'
+        exchange_handler = ExchangeHandler(channel, exchange_name)
 
-    def test_get_exchange_name_without_exchange(self):
+        # When
+        exchange_handler.setup_exchange()
+
+        # Then
+        channel.exchange_declare.assert_called_once_with(
+            exchange=exchange_name, type='direct',
+            durable=True, auto_delete=False)
+
+    def test_raises_when_trying_to_get_exchange(self):
+        # Given
         exchange_handler = ExchangeHandler(None, None)
 
-        with pytest.raises(ExchangeNotDefinedYet):
-            exchange_handler.get_exchange_name()
+        # When
+        with pytest.raises(ExchangeNotDefinedYet) as error:
+            exchange_handler.name
+
+        # Then
+        assert 'The exchange is not defined' == error.value.args[0]
+
+    def test_get_exchange_name(self):
+        # Given
+        exchange_name = 'TEST-EXCHANGE-NAME'
+        exchange_handler = ExchangeHandler(None, exchange_name)
+
+        # When
+        result = exchange_handler.name
+        # Then
+        assert exchange_name == result
