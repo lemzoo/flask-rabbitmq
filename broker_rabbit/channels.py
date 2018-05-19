@@ -3,7 +3,7 @@ import json
 import pika
 
 from broker_rabbit.exceptions import (
-    ConnectionNotOpenedYet, ChannelDoesntExist,
+    ConnectionNotOpenedYet, ChannelNotDefinedError,
     WorkerExitException, ConnectionIsClosed)
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
@@ -52,7 +52,7 @@ class ChannelHandler:
         LOGGER.info('Getting the channel object')
         if self._channel is None:
             LOGGER.error('The channel doesn''t exist yet')
-            raise ChannelDoesntExist('The channel doesn''t exist yet')
+            raise ChannelNotDefinedError('The channel doesn''t exist yet')
 
         return self._channel
 
