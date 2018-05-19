@@ -1,20 +1,14 @@
 import pytest
 
-from tests.rabbit.rabbit_api import client_rabbit_bis, get_queues, \
-    delete_queue, client_rabbit
-from tests.common import (
-    AuthRequests, AnonymousRequests, get_rabbit_url,
-    DEFAULT_FRONTEND_DOMAIN, get_rabbit_management_parsed_url,
-    DEFAULT_FRONTEND_DOMAIN_INTRANET, DEFAULT_DATAMODEL_PATH, PdfRequests,
-    DUMMY_APP)
+from tests.rabbit.rabbit_api import get_queues, delete_queue, client_rabbit
+from tests.common import get_rabbit_management_parsed_url
 
 
 class TestingConfiguration:
 
     @staticmethod
-    def _get_config(app):
+    def get_config():
         config = {
-            'BROKER_RABBIT_URL': get_rabbit_url(),
             'DISABLE_SOLR': True,
             'DISABLE_EVENTS': True,
             'DISABLE_BROKER_LEGACY': True,
@@ -28,75 +22,36 @@ class TestingConfiguration:
             'FPR_TESTING_STUB': True,
             'FNE_TESTING_STUB': True,
             'AGDREF_NUM_TESTING_STUB': True,
-            'ALERT_MAIL_BROKER': ['test@test.com', 'arthur@martin.com'],
-            'FRONTEND_DOMAIN': DEFAULT_FRONTEND_DOMAIN,
-            'FRONTEND_DOMAIN_INTRANET': DEFAULT_FRONTEND_DOMAIN_INTRANET,
-            'DATAMODEL_PATH': DEFAULT_DATAMODEL_PATH
+            'ALERT_MAIL_BROKER': ['test@test.com', 'arthur@martin.com']
         }
 
         return config
 
     @classmethod
-    def setup_class(cls, config={}):
-        """
-        Initialize flask app and configure it with a clean test database
-        """
-        app = DUMMY_APP
-        app.testing = True
-        test_config = cls._get_config(app)
-        test_config.update(config)
-
-        cls.app = app
-        cls.ctx = app.app_context()
-        cls.ctx.push()
+    def setup_class(cls):
+        pass
 
     def setup_method(self, method):
         pass
 
     @classmethod
     def teardown_class(cls):
-        cls.ctx.pop()
-
-
-class WithRequests:
-    def make_auth_request(self, user, password=None, url_prefix=None):
-        if not url_prefix:
-            if isinstance(user, ''):
-                url_prefix = '/agent'
-            else:
-                url_prefix = '/usager'
-        return AuthRequests(user, self.app, self.client_app, url_prefix=url_prefix)
-
-    def make_anonymous_request(self):
-        return AnonymousRequests(self.app, self.client_app)
-
-    def make_pdf_request(self):
-        return PdfRequests(self.app, self.client_app)
-
-
-@pytest.mark.integration_test
-class IntegrationTest(TestingConfiguration):
-    pass
-
-
-@pytest.mark.functional_test
-class FunctionalTest(TestingConfiguration, WithRequests):
-    pass
+        pass
 
 
 @pytest.mark.rabbit
 @pytest.mark.functional_test
-class RabbitBrokerTest(TestingConfiguration, WithRequests):
+class RabbitBrokerTest(TestingConfiguration):
     @staticmethod
-    def _update_config(config):
+    def update_config(config):
         config['DISABLE_EVENTS'] = False
         config['DISABLE_RABBIT'] = False
         return config
 
     @staticmethod
-    def _get_config(app):
-        config = TestingConfiguration._get_config(app)
-        RabbitBrokerTest._update_config(config)
+    def get_config():
+        config = TestingConfiguration.get_config()
+        RabbitBrokerTest.update_config(config)
         return config
 
     @staticmethod
