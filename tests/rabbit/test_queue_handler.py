@@ -3,85 +3,64 @@ from unittest.mock import Mock
 import pytest
 from pika import BlockingConnection
 
-from broker.broker_rabbit.exceptions import (ChannelDoesntExist, QueueNameDoesntMatch,
-                                             ExchangeNotDefinedYet)
-from broker.broker_rabbit.rabbit import QueueHandler
+from broker_rabbit.exceptions import (ChannelNotDefinedError,
+                                      ExchangeNotDefinedYet)
+from broker_rabbit.queue_handler import QueueHandler
 
 
 @pytest.mark.unit_test
 class TestQueueHandler:
-    def test_setup_queue(self):
-        channel = Mock()
-        exchange_name = 'TEST_EXCHANGE_NAME'
-        queue_handler = QueueHandler(channel, exchange_name)
-
-        queue_handler.create_queue = Mock()
-
-        queue_name = 'TEST_QUEUE_NAME'
-        queue_handler.setup_queue(queue_name)
-
-        queue_handler.create_queue.assert_called_with(queue_name)
-
-    def test_setup_queue_without_channel(self):
+    def test_setup_raise_when_channel_is_not_defined(self):
         queue_handler = QueueHandler(None, None)
 
-        with pytest.raises(ChannelDoesntExist):
+        with pytest.raises(ChannelNotDefinedError) as error:
             queue_handler.setup_queue(None)
 
-    def test_setup_queue_without_exchange(self):
+        # Then
+        assert 'The Channel is not defined yet' == error.value.args[0]
+
+    def test_setup_raises_when_exchange_is_not_defined(self):
+        # Given
         connection = Mock(BlockingConnection)
         channel = connection.channel()
         queue_handler = QueueHandler(channel, None)
 
-        with pytest.raises(ExchangeNotDefinedYet):
+        # When
+        with pytest.raises(ExchangeNotDefinedYet) as error:
             queue_handler.setup_queue(None)
 
-    def test_setup_queues(self):
+        # Then
+        assert 'The exchange is not defined' == error.value.args[0]
+
+    def test_setup_queue(self):
+        # Given
         channel = Mock()
-        exchange_name = 'TEST_EXCHANGE_NAME'
+        exchange_name = 'TEST-EXCHANGE-NAME'
+        queue_name = 'TEST-QUEUE-NAME'
+
         queue_handler = QueueHandler(channel, exchange_name)
-        queue_handler.setup_queue = Mock()
+        queue_handler.create_queue = Mock()
 
-        queues = ['TEST_QUEUE_1', 'TEST_QUEUE_2', 'TEST_QUEUE_3']
-        queue_handler.setup_queues(queues)
+        # When
+        queue_handler.setup_queue(queue_name)
 
-        assert queue_handler.setup_queue.call_count == len(queues)
-
-    def test_create_queue_with_short_name(self):
-        channel = Mock()
-        exchange_name = 'TEST_EXCHANGE_NAME'
-        queue_handler = QueueHandler(channel, exchange_name)
-
-        queue_name = '-'
-
-        with pytest.raises(QueueNameDoesntMatch):
-            queue_handler.create_queue(queue_name)
+        # Then
+        queue_handler.create_queue.assert_called_once_with(queue_name)
+        channel.queue_bind.assert_called_once_with(queue=queue_name,
+                                                   exchange= exchange_name)
 
     def test_create_queue(self):
+        # Given
         channel = Mock()
-        exchange_name = 'TEST_EXCHANGE_NAME'
+        exchange_name = 'TEST-EXCHANGE-NAME'
+        queue_name = 'TEST-QUEUE-NAME'
         queue_handler = QueueHandler(channel, exchange_name)
 
-        queue_name = 'TEST_QUEUE_NAME'
+        # When
+        queue_handler.create_queue(queue_name)
 
-        ret = queue_handler.create_queue(queue_name)
-
-        assert ret == queue_name
-        queue_handler._channel.queue_declare.assert_called_with(
-            queue=queue_name,
-            durable=True,
-            auto_delete=False,
-            arguments={'x-ha-policy': 'all'}
+        # Then
+        channel.queue_declare.assert_called_once_with(
+            queue=queue_name, durable=True,
+            auto_delete=False, arguments={'x-ha-policy': 'all'}
         )
-
-    def test_bind_queue_to_default_exchange(self):
-        channel = Mock()
-        exchange_name = 'TEST_EXCHANGE_NAME'
-        queue_handler = QueueHandler(channel, exchange_name)
-
-        queue_name = 'TEST_QUEUE_NAME'
-
-        queue_handler.bind_queue_to_default_exchange(queue_name)
-
-        queue_handler._channel.queue_bind.assert_called_with(
-            queue=queue_name, exchange=exchange_name)
