@@ -17,25 +17,23 @@ class QueueHandler:
         self._channel = channel
         self._exchange = exchange_name
 
-        return
-
-    def setup_queue(self, queue_name):
+    def setup_queue(self, name):
         """Setting the queue to allow pushong in a specied exchange
 
-        :param str queue_name : The name of the queue to set in RabbitMQ.
+        :param str name : The name of the queue to set in RabbitMQ.
         """
         # Check if the channel is set or not
         self._check_basic_config()
 
         # Create the queue
-        declared_queue = self.create_queue(queue_name)
+        self.create_queue(name)
 
         # Bind the queue to the exchange
-        self.bind_queue_to_default_exchange(declared_queue)
+        self._channel.queue_bind(queue=name, exchange=self._exchange)
 
     def _check_basic_config(self):
         if self._channel is None:
-            raise ChannelNotDefinedError('Channel is not defined yet')
+            raise ChannelNotDefinedError('The Channel is not defined yet')
 
         if self._exchange is None:
             raise ExchangeNotDefinedYet('The exchange is not defined')
@@ -51,13 +49,5 @@ class QueueHandler:
 
         # TODO : Check declared_queue to return the real name of the queue
         self._channel.queue_declare(queue=queue_name, durable=durable,
-                                    auto_delete=auto_delete)
-        return queue_name
-
-    def bind_queue_to_default_exchange(self, queue_name):
-        self._check_basic_config()
-        self._channel.queue_bind(queue=queue_name, exchange=self._exchange)
-
-    def setup_queues(self, queues):
-        for queue_name in queues:
-            self.setup_queue(queue_name)
+                                    auto_delete=auto_delete,
+                                    arguments={'x-ha-policy': 'all'})
