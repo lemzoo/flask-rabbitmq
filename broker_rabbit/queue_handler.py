@@ -1,5 +1,5 @@
-from broker_rabbit.exceptions import (
-    ChannelNotDefinedError, QueueNameDoesntMatch, ExchangeNotDefinedYet)
+from broker_rabbit.exceptions import (ChannelNotDefinedError,
+                                      ExchangeNotDefinedYet)
 
 
 class QueueHandler:
@@ -48,9 +48,6 @@ class QueueHandler:
         :param boolean auto_delete : Auto delete the queue when  the message
         are purged (No consumer/publisher working on this particular queue)
         """
-
-        if len(queue_name) < 3:
-            raise QueueNameDoesntMatch("This queue name doesn't match")
 
         # TODO : Check declared_queue to return the real name of the queue
         self._channel.queue_declare(queue=queue_name, durable=durable,
