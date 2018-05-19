@@ -10,7 +10,7 @@ from tests import common
 class TestConnectionHandler(RabbitBrokerTest):
     def test_initialize_new_connection(self):
         # When
-        connection_handler = ConnectionHandler(common.get_rabbit_url())
+        connection_handler = ConnectionHandler(common.BROKER_URL_TEST)
 
         # Then
         connection = connection_handler.get_current_connection()
@@ -35,7 +35,7 @@ class TestConnectionHandler(RabbitBrokerTest):
 
     def test_open_connection_successfully(self):
         # When
-        connection_handler = ConnectionHandler(common.get_rabbit_url())
+        connection_handler = ConnectionHandler(common.BROKER_URL_TEST)
 
         # Then
         connection = connection_handler.get_current_connection()
@@ -43,7 +43,7 @@ class TestConnectionHandler(RabbitBrokerTest):
 
     def test_close_connection_successfully(self):
         # Given
-        connection_handler = ConnectionHandler(common.get_rabbit_url())
+        connection_handler = ConnectionHandler(common.BROKER_URL_TEST)
 
         # When
         connection_handler.close_connection()
