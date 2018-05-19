@@ -30,10 +30,6 @@ class ConnectionIsClosed(BrokerRabbitException):
     pass
 
 
-class QueueNameDoesntMatch(BrokerRabbitException):
-    pass
-
-
 class QueueDoesNotExist(BrokerRabbitException):
     pass
 
