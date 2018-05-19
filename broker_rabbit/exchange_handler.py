@@ -1,4 +1,4 @@
-from broker_rabbit.exceptions import ChannelDoesntExist, ExchangeNotDefinedYet
+from broker_rabbit.exceptions import ChannelNotDefinedError, ExchangeNotDefinedYet
 
 
 class ExchangeHandler:
@@ -7,12 +7,18 @@ class ExchangeHandler:
 
     """
 
-    def __init__(self, channel, exchange_name, exchange_type='direct',
-                 durable=True, auto_delete=False):
+    def __init__(self, channel, name):
         """Create a new instance of exchange handler class by using the channel
 
         :param ChannelHandler channel: The given channel to connect to RabbitMQ
-        :param str exchange_name : The name of the exchange to set
+        :param str name : The name of the exchange to set
+        """
+        self._channel = channel
+        self._name = name
+
+    def setup_exchange(self, exchange_type='direct',
+                       durable=True, auto_delete=False):
+        """
         :param str exchange_type : The type of exchange.
             By default, the exchange is set to direct type to allow simple
             routing via the queue name.
@@ -24,23 +30,17 @@ class ExchangeHandler:
         :param boolean auto_delete : Delete the exchange when all queues have
         finished using it. By default, it's False.
         """
-        self._channel = channel
-        self._exchange = exchange_name
-        self._type = exchange_type
-        self._durable = durable
-        self._auto_delete = auto_delete
-
-    def setup_exchange(self):
         if self._channel is None:
-            raise ChannelDoesntExist("The channel doesn't exist")
+            raise ChannelNotDefinedError('The channel was not defined')
 
         # Check Me : self._channel.basic_qos(prefetch_count=1)
         self._channel.exchange_declare(
-            exchange=self._exchange, type=self._type,
-            durable=self._durable, auto_delete=self._auto_delete)
+            exchange=self._name, type=exchange_type,
+            durable=durable, auto_delete=auto_delete)
 
-    def get_exchange_name(self):
-        if self._exchange is None:
-            raise ExchangeNotDefinedYet("The exchange is not defined")
+    @property
+    def name(self):
+        if self._name is None:
+            raise ExchangeNotDefinedYet('The exchange is not defined')
 
-        return self._exchange
+        return self._name
