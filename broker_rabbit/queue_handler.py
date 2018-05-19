@@ -1,5 +1,5 @@
 from broker_rabbit.exceptions import (
-    ChannelDoesntExist, QueueNameDoesntMatch, ExchangeNotDefinedYet)
+    ChannelNotDefinedError, QueueNameDoesntMatch, ExchangeNotDefinedYet)
 
 
 class QueueHandler:
@@ -35,7 +35,7 @@ class QueueHandler:
 
     def _check_basic_config(self):
         if self._channel is None:
-            raise ChannelDoesntExist('Channel is not defined yet')
+            raise ChannelNotDefinedError('Channel is not defined yet')
 
         if self._exchange is None:
             raise ExchangeNotDefinedYet('The exchange is not defined')

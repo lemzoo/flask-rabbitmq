@@ -10,7 +10,7 @@ class ExchangeNotDefinedYet(BrokerRabbitException):
     pass
 
 
-class ChannelDoesntExist(BrokerRabbitException):
+class ChannelNotDefinedError(BrokerRabbitException):
     pass
 
 
