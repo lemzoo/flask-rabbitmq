@@ -1,6 +1,9 @@
 import logging
 import json
+from json import JSONDecodeError
+
 import pika
+from pika.utils import is_callable
 
 from broker_rabbit.exceptions import (
     ConnectionNotOpenedYet, ChannelNotDefinedError,
@@ -57,6 +60,10 @@ class ChannelHandler:
         return self._channel
 
 
+class BadFormatMessageError(Exception):
+    pass
+
+
 class WorkerChannel(ChannelHandler):
 
     def __init__(self, connection, queue, on_message_callback):
@@ -93,16 +100,31 @@ class WorkerChannel(ChannelHandler):
             return True
 
     def bind_callback(self, raw_message):
+
         try:
             message = json.loads(raw_message)
-            self._on_message_callback(message)
-            LOGGER.info('Received message # %s #', message)
-        except (AttributeError, TypeError):
+        except (TypeError, JSONDecodeError) as error:
+            LOGGER.warning('Error when trying to decode message',
+                            original_exception=str(error))
+            raise BadFormatMessageError('Error when trying to decode message',
+                                       original_exception=str(error))
+
+        if not isinstance(message, dict):
+            # TODO: Handle here a dead letter queue after deciding
+            # TODO: the next step of the received message
+            raise BadFormatMessageError('Received message is not a dictionary')
+
+        if self._on_message_callback and not is_callable(self._on_message_callback):
             LOGGER.info('Error on the callback definition. Message is not '
                         'acknowledge. And it will be keep on the RabbitMQ')
             raise CallBackError(
                 'You should implement your callback with these arguments like '
                 'my_callback(created_at, status, content)')
+
+
+
+        self._on_message_callback(message)
+        LOGGER.info('Received message # %s #', message)
 
     def on_message(self, channel, method, properties, body):
         try:
