@@ -6,11 +6,12 @@ from pika.connection import Connection
 from pika.spec import Basic
 
 from broker_rabbit.exceptions import (
-    ConnectionNotOpenedYet, ConnectionIsClosed, WorkerExitException,
-    ChannelNotDefinedError)
+    ConnectionNotOpenedYet, ConnectionIsClosed,
+    WorkerExitException, ChannelNotDefinedError)
 
 from broker_rabbit.channels import (
     ChannelHandler, WorkerChannel, ProducerChannel)
+
 from broker_rabbit.connection_handler import ConnectionHandler
 
 from tests import common
@@ -126,10 +127,10 @@ class TestProducerChannel:
         self.producer_channel.close()
 
     def test_send_message(self):
-        exchange = 'TEST_EXCHANGE'
-        queue = 'TEST_QUEUE'
-        message = 'TEST_MESSAGE'
-        properties = 'TEST_PROPERTIES'
+        exchange = 'TEST-EXCHANGE'
+        queue = 'TEST-QUEUE'
+        message = 'TEST-MESSAGE'
+        properties = 'TEST-PROPERTIES'
 
         self.producer_channel._basic_properties = properties
         body = json.dumps(message)
