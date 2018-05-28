@@ -118,25 +118,26 @@ class TestProducerChannel:
     def setup_method(self):
         connection = Mock(Connection)
         connection.is_closed = False
-        application_id = 'TEST_APP_ID'
-        delivery_mode = 2
-        self.producer_channel = ProducerChannel(connection, application_id, delivery_mode)
+        self.producer_channel = ProducerChannel(connection, delivery_mode=2,
+                                                application_id='TEST-APP_ID')
         self.producer_channel.open()
 
     def teardown_method(self):
         self.producer_channel.close()
 
     def test_send_message(self):
+        # Given
         exchange = 'TEST-EXCHANGE'
         queue = 'TEST-QUEUE'
         message = 'TEST-MESSAGE'
         properties = 'TEST-PROPERTIES'
-
         self.producer_channel._basic_properties = properties
-        body = json.dumps(message)
 
+        # When
         self.producer_channel.send_message(exchange, queue, message)
 
-        self.producer_channel._channel.basic_publish.assert_called_with(
-            exchange=exchange, routing_key=queue,
-            body=body, properties=properties)
+        # Then
+        body = json.dumps(message)
+        channel = self.producer_channel.get_channel()
+        channel.basic_publish.assert_called_with(exchange=exchange, routing_key=queue,
+                                                 body=body, properties=properties)
