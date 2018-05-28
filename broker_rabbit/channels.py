@@ -52,7 +52,7 @@ class ChannelHandler:
         LOGGER.info('Getting the channel object')
         if self._channel is None:
             LOGGER.error('The channel doesn''t exist yet')
-            raise ChannelNotDefinedError('The channel doesn''t exist yet')
+            raise ChannelNotDefinedError('The channel does not exist yet')
 
         return self._channel
 
