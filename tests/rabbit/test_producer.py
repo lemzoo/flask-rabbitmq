@@ -2,21 +2,30 @@ from unittest.mock import Mock
 
 import pytest
 
-from broker.broker_rabbit.rabbit.channels import ProducerChannel
-from broker.broker_rabbit.rabbit.producer import Producer
+from broker_rabbit.channels import ProducerChannel
+from broker_rabbit.producer import Producer
 
 
 @pytest.mark.unit_test
 class TestProducer:
     def test_publish(self):
+        # Given
+        connection = None
         exchange_name = "TEST_EXCHANGE_NAME"
-        producer = Producer(None, exchange_name)
+        application_id = 'TEST-APPLICATION-ID'
+        delivery_mode = 2
+        producer = Producer(connection, exchange_name, application_id, delivery_mode)
+        queues = ['first-queue', 'second-queue']
         producer._producer_channel = Mock(ProducerChannel)
-        queue = "FAKE_QUEUE"
+        producer.bootstrap(queues)
+        first_queue = queues[0]
         message = "TEST_MESSAGE"
 
-        producer.publish(queue, message)
+        # When
+        producer.publish(first_queue, message)
 
-        assert producer._producer_channel.open.called
-        producer._producer_channel.send_message.assert_called_with(exchange_name, queue, message)
-        assert producer._producer_channel.close.called
+        # Then
+        channel = producer._producer_channel
+        assert channel.open.called is True
+        channel.send_message.assert_called_with(exchange_name, first_queue, message)
+        assert channel.close.called is True
