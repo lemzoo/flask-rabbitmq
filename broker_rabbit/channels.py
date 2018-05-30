@@ -1,6 +1,5 @@
 import logging
 import json
-from json import JSONDecodeError
 
 import pika
 from pika.utils import is_callable
@@ -103,7 +102,7 @@ class WorkerChannel(ChannelHandler):
 
         try:
             message = json.loads(raw_message)
-        except (TypeError, JSONDecodeError) as error:
+        except (TypeError, json.JSONDecodeError) as error:
             LOGGER.warning('Error when trying to decode message',
                             original_exception=str(error))
             raise BadFormatMessageError('Error when trying to decode message',
