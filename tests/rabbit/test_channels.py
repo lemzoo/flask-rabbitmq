@@ -17,7 +17,7 @@ from broker_rabbit.connection_handler import ConnectionHandler
 from tests import common
 from tests.base_test import RabbitBrokerTest
 
-
+# TODO: Test the new added method
 @pytest.mark.functional_test
 class TestChannelHandler(RabbitBrokerTest):
     def setup_method(self):
@@ -92,25 +92,30 @@ class TestWorkerChannel:
     def setup_method(self):
         connection = Mock(Connection)
         connection.is_closed = False
-        self.worker_channel = WorkerChannel(connection, None, None)
-        self.worker_channel.open()
+        self.worker = WorkerChannel(connection, None, None)
+        self.worker.open()
 
     def teardown_method(self):
-        self.worker_channel.close()
+        self.worker.close()
 
     def test_raising_error_on_keyboard_interrupt(self):
-        self.worker_channel._channel.start_consuming.side_effect = \
-            KeyboardInterrupt('Testing Keyboard Exception')
-        with pytest.raises(WorkerExitException):
-            self.worker_channel.run()
+        # Given
+        self.worker._channel.start_consuming.side_effect = KeyboardInterrupt()
+
+        # When
+        with pytest.raises(WorkerExitException) as error:
+            self.worker.run()
+
+        # Then
+        assert 'Worker stopped pulling message' == error.value.args[0]
 
     def test_execute_rabbit_is_not_called_when_exception_raised(self):
         empty_body_as_bytes = b'{}'
-        self.worker_channel.event_handler = Mock()
+        self.worker.event_handler = Mock()
         # When
-        self.worker_channel.on_message(None, Basic.GetOk(), None, empty_body_as_bytes)
+        self.worker.on_message(None, Basic.GetOk(), None, empty_body_as_bytes)
         # Then
-        assert not self.worker_channel.event_handler.execute_rabbit.called
+        assert not self.worker.event_handler.execute_rabbit.called
 
 
 @pytest.mark.unit_test
