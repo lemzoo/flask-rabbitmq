@@ -15,9 +15,9 @@ def client_rabbit_bis(url: str):
 
 
 def client_rabbit(url, username, password):
-    """Configure the client for rabbit
+    """Configure the client for broker_rabbit
 
-    :param str url: The address url of the host where rabbit located
+    :param str url: The address url of the host where broker_rabbit located
     :param str username: The username id
     :param str password: The password
     :return Client client: authenticated client which is ready to use

@@ -63,7 +63,7 @@ class BrokerRabbitMQ:
         self.connection_handler = ConnectionHandler(self.url)
         connection = self.connection_handler.get_current_connection()
 
-        # Setup default producer for rabbit
+        # Setup default producer for broker_rabbit
         self.producer = Producer(
             connection, self.exchange_name,
             self.application_id, self.delivery_mode)

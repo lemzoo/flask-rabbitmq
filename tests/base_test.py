@@ -1,6 +1,6 @@
 import pytest
 
-from tests.rabbit.rabbit_api import get_queues, delete_queue, client_rabbit
+from tests.broker_rabbit.rabbit_api import get_queues, delete_queue, client_rabbit
 from tests.common import get_rabbit_management_parsed_url
 
 
