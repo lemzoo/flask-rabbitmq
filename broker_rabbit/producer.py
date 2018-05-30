@@ -20,7 +20,7 @@ class Producer:
     def bootstrap(self, queues):
         """Initialize the queue on RabbitMQ
 
-        :param list queues: List of queue to setup on rabbit
+        :param list queues: List of queue to setup on broker_rabbit
         """
         self._producer_channel.open()
         try:

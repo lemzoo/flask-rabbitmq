@@ -74,7 +74,7 @@ class WorkerChannel(ChannelHandler):
         LOGGER.info('Consuming message on queue : %s', self._queue)
 
         try:
-            """The queue can be non exist on rabbit, so ChannelClosed exception
+            """The queue can be non exist on broker_rabbit, so ChannelClosed exception
             is handled by RabbitMQ and then the TCP connection is closed.
             Re-implement this if others worker can be launch and handle the
             Exception.
