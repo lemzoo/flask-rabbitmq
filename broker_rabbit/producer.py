@@ -30,7 +30,8 @@ class Producer:
             exchange_handler.setup_exchange()
 
             queue_handler = QueueHandler(channel, self._exchange_name)
-            queue_handler.setup_queues(queues)
+            for queue in queues:
+                queue_handler.setup_queue(queue)
         finally:
             self._queues = queues
             self._producer_channel.close()
