@@ -10,21 +10,23 @@ class Producer:
 
     """
 
-    def __init__(self, connection, exchange_name,
-                 application_id, delivery_mode):
+    def __init__(self, channel, exchange_name, queues=None):
+        self._channel = channel
         self._exchange_name = exchange_name
-        self._producer_channel = ProducerChannel(
-            connection, application_id, delivery_mode)
-        self._queues = None
+
+        self._queues = queues
+        if not self._queues:
+            self.bootstrap(self._queues)
+
 
     def bootstrap(self, queues):
         """Initialize the queue on RabbitMQ
 
         :param list queues: List of queue to setup on broker_rabbit
         """
-        self._producer_channel.open()
+        self._channel.open()
         try:
-            channel = self._producer_channel.get_channel()
+            channel = self._channel.get_channel()
 
             exchange_handler = ExchangeHandler(channel, self._exchange_name)
             exchange_handler.setup_exchange()
@@ -34,7 +36,7 @@ class Producer:
                 queue_handler.setup_queue(queue)
         finally:
             self._queues = queues
-            self._producer_channel.close()
+            self._channel.close()
 
     def publish(self, queue, message):
         """Publish the given message in the given queue
@@ -48,9 +50,9 @@ class Producer:
                 'This queue ’{queue}’ is not declared. Please call '
                 'init_env_rabbit before using publish'.format(queue=queue))
 
-        self._producer_channel.open()
+        self._channel.open()
         try:
-            self._producer_channel.send_message(self._exchange_name,
+            self._channel.send_message(self._exchange_name,
                                                 queue, message)
         finally:
-            self._producer_channel.close()
+            self._channel.close()
