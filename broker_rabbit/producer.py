@@ -14,9 +14,8 @@ class Producer:
         self._channel = channel
         self._exchange_name = exchange_name
 
-        self._queues = queues
-        if not self._queues:
-            self.bootstrap(self._queues)
+        if queues:
+            self.bootstrap(queues)
 
 
     def bootstrap(self, queues):
@@ -48,11 +47,10 @@ class Producer:
         if queue not in self._queues:
             raise QueueDoesNotExist(
                 'This queue ’{queue}’ is not declared. Please call '
-                'init_env_rabbit before using publish'.format(queue=queue))
+                'bootstrap before using publish'.format(queue=queue))
 
         self._channel.open()
         try:
-            self._channel.send_message(self._exchange_name,
-                                                queue, message)
+            self._channel.send_message(self._exchange_name, queue, message)
         finally:
             self._channel.close()
