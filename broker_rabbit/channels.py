@@ -158,8 +158,8 @@ class ProducerChannel(ChannelHandler):
 
     def __init__(self, connection, application_id, delivery_mode):
         super().__init__(connection)
-        self._basic_properties = apply_basic_properties(application_id,
-                                                        delivery_mode)
+        self.basic_properties = apply_basic_properties(application_id,
+                                                       delivery_mode)
 
     def send_message(self, exchange, queue, message):
         if not isinstance(message, dict):
@@ -169,7 +169,7 @@ class ProducerChannel(ChannelHandler):
         msg_to_send = json.dumps(message)
         self._channel.basic_publish(
             exchange=exchange, routing_key=queue,
-            body=msg_to_send, properties=self._basic_properties)
+            body=msg_to_send, properties=self.basic_properties)
         LOGGER.info('message was published successfully into RabbitMQ')
 
 
