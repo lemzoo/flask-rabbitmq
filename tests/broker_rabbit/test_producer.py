@@ -4,9 +4,9 @@ import pytest
 
 from broker_rabbit.channels import ProducerChannel
 from broker_rabbit.connection_handler import ConnectionHandler
-from broker_rabbit.exceptions import QueueDoesNotExist, ConnectionNotOpenedYet, \
-    ConnectionIsClosed
+from broker_rabbit.exceptions import QueueDoesNotExist, ConnectionNotOpenedYet
 from broker_rabbit.producer import Producer
+
 from tests import common
 
 
@@ -23,6 +23,8 @@ class TestBase:
         channel_handler.open()
         self.channel = channel_handler.get_channel()
         self.channel = Mock(ProducerChannel)
+        self.message = "TEST-CONTENT-MESSAGE"
+
 
 
 @pytest.mark.unit_test
@@ -31,15 +33,15 @@ class TestProducer(TestBase):
         super().setup()
         self.queues = ['first-queue', 'second-queue']
         self.producer = Producer(self.channel, self.exchange_name, self.queues)
+        self.first_queue = self.queues[0]
 
     def test_should_raise_when_queue_to_publish_does_not_exist(self):
         # Given
         unknown_queue = 'UNKNOWN'
-        message = "TEST-MESSAGE-CONTENT"
 
         # When
         with pytest.raises(QueueDoesNotExist) as error:
-            self.producer.publish(unknown_queue, message)
+            self.producer.publish(unknown_queue, self.message)
 
         # Then
         error_message = 'This queue ’UNKNOWN’ is not declared. Please call ' \
@@ -48,39 +50,27 @@ class TestProducer(TestBase):
         assert error_message == error.value.args[0]
 
     def test_should_open_channel_before_sending_message(self):
-        # Given
-        first_queue = self.queues[0]
-        message = "TEST-MESSAGE"
-
         # When
-        self.producer.publish(first_queue, message)
+        self.producer.publish(self.first_queue, self.message)
 
         # Then
         method_calls = self.channel.method_calls
         assert call.open() == method_calls[3]
         call_send_message = call.send_message(
-            self.exchange_name, first_queue, message)
+            self.exchange_name, self.first_queue, self.message)
         assert call_send_message == method_calls[4]
 
     def test_should_publish_on_given_queue(self):
-        # Given
-        first_queue = self.queues[0]
-        message = "TEST-MESSAGE"
-
         # When
-        self.producer.publish(first_queue, message)
+        self.producer.publish(self.first_queue, self.message)
 
         # Then
         self.channel.send_message.assert_called_with(
-            self.exchange_name, first_queue, message)
+            self.exchange_name, self.first_queue, self.message)
 
     def test_should_close_used_channel_after_publishing_message(self):
-        # Given
-        first_queue = self.queues[0]
-        message = "TEST-MESSAGE"
-
         # When
-        self.producer.publish(first_queue, message)
+        self.producer.publish(self.first_queue, self.message)
 
         # Then
         assert self.channel.close.called is True
