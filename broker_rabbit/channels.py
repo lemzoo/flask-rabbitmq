@@ -158,30 +158,30 @@ class ProducerChannel(ChannelHandler):
 
     def __init__(self, connection, application_id, delivery_mode):
         super().__init__(connection)
-        self.basic_properties = apply_basic_properties(application_id,
-                                                       delivery_mode)
+        self.basic_properties = self.apply_basic_properties(application_id,
+                                                            delivery_mode)
 
     def send_message(self, exchange, queue, message):
-        msg_to_send = json.dumps(message)
+        serialized_message = json.dumps(message)
 
         self._channel.basic_publish(
             exchange=exchange, routing_key=queue,
-            body=msg_to_send, properties=self.basic_properties)
+            body=serialized_message, properties=self.basic_properties)
         LOGGER.info('message was published successfully into RabbitMQ')
 
+    @staticmethod
+    def apply_basic_properties(app_id, delivery_mode,
+                               content_type='application/json'):
+        """Apply the basic properties for RabbitMQ.
 
-def apply_basic_properties(application_id, delivery_mode,
-                           content_type='application/json'):
-    """Apply the basic properties for RabbitMQ.
-
-    :param str application_id : The id of the current app.
-    :param str content_type : The content type of the message
-    :param int delivery_mode : The delivering mode for RabbitMQ.
-            `2` means the message will be persisted on the disk
-            `1` means the message will not be persisted.
-    """
-    LOGGER.info('Applying the properties for RabbitMQ')
-    properties = pika.BasicProperties(app_id=application_id,
-                                      content_type=content_type,
-                                      delivery_mode=delivery_mode)
-    return properties
+        :param str app_id : The id of the current app.
+        :param int delivery_mode : The delivering mode for RabbitMQ.
+                `2` means the message will be persisted on the disk
+                `1` means the message will not be persisted.
+        :param str content_type : The content type of the message
+        """
+        LOGGER.info('Applying the properties for RabbitMQ')
+        properties = pika.BasicProperties(app_id=app_id,
+                                          content_type=content_type,
+                                          delivery_mode=delivery_mode)
+        return properties
