@@ -6,7 +6,7 @@ from pika.utils import is_callable
 
 from broker_rabbit.exceptions import (
     ConnectionNotOpenedYet, ChannelNotDefinedError,
-    WorkerExitException, ConnectionIsClosed, MessageNotSerializableError)
+    WorkerExitException, ConnectionIsClosed)
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
@@ -162,11 +162,8 @@ class ProducerChannel(ChannelHandler):
                                                        delivery_mode)
 
     def send_message(self, exchange, queue, message):
-        if not isinstance(message, dict):
-            error_message = 'This message `{content}` is not serializable'
-            raise MessageNotSerializableError(error_message.format(content=message))
-
         msg_to_send = json.dumps(message)
+
         self._channel.basic_publish(
             exchange=exchange, routing_key=queue,
             body=msg_to_send, properties=self.basic_properties)
