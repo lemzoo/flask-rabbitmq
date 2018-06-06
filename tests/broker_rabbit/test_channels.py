@@ -17,6 +17,7 @@ from broker_rabbit.connection_handler import ConnectionHandler
 from tests import common
 from tests.base_test import RabbitBrokerTest
 
+
 # TODO: Test the new added method
 @pytest.mark.functional_test
 class TestChannelHandler(RabbitBrokerTest):
@@ -123,26 +124,39 @@ class TestProducerChannel:
     def setup_method(self):
         connection = Mock(Connection)
         connection.is_closed = False
-        self.producer_channel = ProducerChannel(connection, delivery_mode=2,
-                                                application_id='TEST-APP_ID')
-        self.producer_channel.open()
+        self.channel = ProducerChannel(connection, delivery_mode=2,
+                                       application_id='TEST-APP_ID')
+        self.channel.open()
+        self.exchange = 'TEST-EXCHANGE'
+        self.queue = 'TEST-QUEUE'
 
     def teardown_method(self):
-        self.producer_channel.close()
+        self.channel.close()
 
     def test_send_message(self):
         # Given
-        exchange = 'TEST-EXCHANGE'
-        queue = 'TEST-QUEUE'
-        message = 'TEST-MESSAGE'
-        properties = 'TEST-PROPERTIES'
-        self.producer_channel._basic_properties = properties
+        message = {'key': 'value', 'number': 1, 'foo': 'bar'}
+        self.channel.basic_properties = 'TEST-PROPERTIES'
 
         # When
-        self.producer_channel.send_message(exchange, queue, message)
+        self.channel.send_message(self.exchange, self.queue, message)
 
         # Then
         body = json.dumps(message)
-        channel = self.producer_channel.get_channel()
-        channel.basic_publish.assert_called_with(exchange=exchange, routing_key=queue,
-                                                 body=body, properties=properties)
+        channel = self.channel.get_channel()
+        channel.basic_publish.assert_called_with(
+            exchange=self.exchange, routing_key=self.queue,
+            body=body, properties='TEST-PROPERTIES')
+
+    def test_returns_correct_for_properties(self):
+        # Given
+        application_id = 'TEST-APPLICATION-ID'
+        delivery_mode = 2
+
+        # When
+        properties = self.channel.apply_basic_properties(application_id,
+                                                         delivery_mode)
+
+        # Then
+        assert 'TEST-APPLICATION-ID' == properties.app_id
+        assert 2 == properties.delivery_mode
