@@ -112,14 +112,12 @@ class WorkerChannel(ChannelHandler):
             # TODO: the next step of the received message
             raise BadFormatMessageError('Received message is not a dictionary')
 
-        if is_callable(self._on_message_callback):
+        if not is_callable(self._on_message_callback):
             LOGGER.info('Error on the callback definition. Message is not '
                         'acknowledge. And it will be keep on the RabbitMQ')
-            raise CallBackError(
-                'You should implement your callback with these arguments like '
-                'my_callback(created_at, status, content)')
-
-
+            error_message = 'You should implement your callback with these ' \
+                            'arguments like my_callback(content)'
+            raise CallBackError(error_message)
 
         self._on_message_callback(message)
         LOGGER.info('Received message # %s #', message)
