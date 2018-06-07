@@ -99,21 +99,20 @@ class WorkerChannel(ChannelHandler):
             return True
 
     def bind_callback(self, raw_message):
-
         try:
             message = json.loads(raw_message)
-        except (TypeError, json.JSONDecodeError) as error:
-            LOGGER.warning('Error when trying to decode message',
-                            original_exception=str(error))
-            raise BadFormatMessageError('Error when trying to decode message',
-                                       original_exception=str(error))
+        except (TypeError, ValueError) as error:
+            msg = 'Error while trying to jsonify message with `{content}`'
+            msg = msg.format(content=raw_message)
+            LOGGER.warning(msg)
+            raise BadFormatMessageError(msg)
 
         if not isinstance(message, dict):
             # TODO: Handle here a dead letter queue after deciding
             # TODO: the next step of the received message
             raise BadFormatMessageError('Received message is not a dictionary')
 
-        if self._on_message_callback and not is_callable(self._on_message_callback):
+        if is_callable(self._on_message_callback):
             LOGGER.info('Error on the callback definition. Message is not '
                         'acknowledge. And it will be keep on the RabbitMQ')
             raise CallBackError(
