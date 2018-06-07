@@ -10,7 +10,7 @@ from broker_rabbit.exceptions import (
     WorkerExitException, ChannelNotDefinedError)
 
 from broker_rabbit.channels import (
-    ChannelHandler, WorkerChannel, ProducerChannel)
+    ChannelHandler, WorkerChannel, ProducerChannel, BadFormatMessageError)
 
 from broker_rabbit.connection_handler import ConnectionHandler
 
@@ -90,7 +90,7 @@ class TestChannelHandler(RabbitBrokerTest):
 
 @pytest.mark.unit_test
 class TestWorkerChannel:
-    def setup_method(self):
+    def setup(self):
         connection = Mock(Connection)
         connection.is_closed = False
         self.worker = WorkerChannel(connection, None, None)
@@ -117,6 +117,24 @@ class TestWorkerChannel:
         self.worker.on_message(None, Basic.GetOk(), None, empty_body_as_bytes)
         # Then
         assert not self.worker.event_handler.execute_rabbit.called
+
+
+@pytest.mark.unit_test
+class TestWorkerChannelBindCallBack(TestWorkerChannel):
+    def setup(self):
+        super().setup()
+
+    def test_raise_error_when_message_is_not_a_json_content_type(self):
+        # Given
+        raw_message = 'foo-content'
+
+        # When
+        with pytest.raises(BadFormatMessageError) as error:
+            self.worker.bind_callback(raw_message)
+
+        # Then
+        expected_msg = 'Error while trying to jsonify message with `foo-content`'
+        assert expected_msg == error.value.args[0]
 
 
 @pytest.mark.unit_test
