@@ -136,6 +136,55 @@ class TestWorkerChannelBindCallBack(TestWorkerChannel):
         # Then
         expected_msg = 'Error while trying to jsonify message with `foo-content`'
         assert expected_msg == error.value.args[0]
+        original_msg = 'Expecting value: line 1 column 1 (char 0)'
+        assert original_msg == error.value.args[1]['original_exception']
+
+    def test_raise_error_when_callback_is_not_callable(self):
+        # Given
+        message = {'key': 'value', 'number': 1, 'foo': 'bar'}
+        raw_message = json.dumps(message)
+        # When
+        with pytest.raises(CallBackError) as error:
+            self.worker.bind_callback(raw_message)
+
+        # Then
+        assert 'The callback is not callable' == error.value.args[0]
+
+    def test_should_raise_callback_with_decoded_message(self):
+        # Given
+        def test_callback(arg1, arg2):
+            pass
+
+        # Monkey Patch the call back
+        self.worker._on_message_callback = test_callback
+
+        message = {'key': 'value', 'number': 1, 'foo': 'bar'}
+        raw_message = json.dumps(message)
+
+        # When
+        with pytest.raises(CallBackError) as error:
+            self.worker.bind_callback(raw_message)
+
+        # Then
+        error_message = 'You should implement your callback ' \
+                        'like my_callback(content)'
+        assert error_message == error.value.args[0]
+        original_msg = "test_callback() missing 1 required positional argument: 'arg2'"
+        assert original_msg == error.value.args[1]['original_exception']
+
+    def test_should_call_callback_with_decoded_message(self):
+        # Given
+        # Monkey Patch the call back
+        callback_mock = Mock()
+        self.worker._on_message_callback = callback_mock
+        message = {'key': 'value', 'number': 1, 'foo': 'bar'}
+        raw_message = json.dumps(message)
+
+        # When
+        self.worker.bind_callback(raw_message)
+
+        # Then
+        callback_mock.assert_called_with(message)
 
 
 @pytest.mark.unit_test
