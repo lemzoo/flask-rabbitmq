@@ -10,7 +10,8 @@ from broker_rabbit.exceptions import (
     WorkerExitException, ChannelNotDefinedError)
 
 from broker_rabbit.channels import (
-    ChannelHandler, WorkerChannel, ProducerChannel, BadFormatMessageError)
+    ChannelHandler, WorkerChannel, ProducerChannel,
+    BadFormatMessageError, CallBackError)
 
 from broker_rabbit.connection_handler import ConnectionHandler
 
@@ -126,11 +127,11 @@ class TestWorkerChannelBindCallBack(TestWorkerChannel):
 
     def test_raise_error_when_message_is_not_a_json_content_type(self):
         # Given
-        raw_message = 'foo-content'
+        not_serializable_message = 'foo-content'
 
         # When
         with pytest.raises(BadFormatMessageError) as error:
-            self.worker.bind_callback(raw_message)
+            self.worker.bind_callback(not_serializable_message)
 
         # Then
         expected_msg = 'Error while trying to jsonify message with `foo-content`'
