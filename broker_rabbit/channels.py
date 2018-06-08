@@ -91,20 +91,7 @@ class WorkerChannel(ChannelHandler):
             self.on_message(self._channel, method, header, body)
             return True
 
-    def bind_callback(self, raw_message):
-        try:
-            message = json.loads(raw_message)
-        except (TypeError, ValueError) as error:
-            error_msg = 'Error while trying to jsonify message with `{content}`'
-            error_msg = error_msg.format(content=raw_message)
-            LOGGER.warning(error_msg)
-            raise BadFormatMessageError(error_msg, original_exception=str(error))
-
-        if not isinstance(message, dict):
-            # TODO: Handle here a dead letter queue after deciding
-            # TODO: the next step of the received message
-            raise BadFormatMessageError('Received message is not a dictionary')
-
+    def bind_callback(self, message):
         if not is_callable(self._on_message_callback):
             LOGGER.info('Wrong callback is binded')
             raise CallBackError('The callback is not callable')
@@ -121,8 +108,11 @@ class WorkerChannel(ChannelHandler):
 
     def on_message(self, channel, method, properties, body):
         try:
+            # TODO: Handle here a dead letter queue after deciding
+            # TODO: the next step of the received message
             decoded_message = body.decode()
-            self.bind_callback(decoded_message)
+            raw_message = json.loads(decoded_message)
+            self.bind_callback(raw_message)
         except Exception as exception_info:
             # TODO: handle dead letter
             LOGGER.error(
