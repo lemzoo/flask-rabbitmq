@@ -6,15 +6,12 @@ from pika.utils import is_callable
 
 from broker_rabbit.exceptions import (
     ConnectionNotOpenedYet, ChannelNotDefinedError,
-    WorkerExitException, ConnectionIsClosed)
+    WorkerExitException, ConnectionIsClosed, BadFormatMessageError,
+    CallBackError)
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
 LOGGER = logging.getLogger(__name__)
-
-
-class CallBackError(Exception):
-    pass
 
 
 class ChannelHandler:
@@ -59,10 +56,6 @@ class ChannelHandler:
         return self._channel
 
 
-class BadFormatMessageError(Exception):
-    pass
-
-
 class WorkerChannel(ChannelHandler):
 
     def __init__(self, connection, queue, on_message_callback):
@@ -102,10 +95,10 @@ class WorkerChannel(ChannelHandler):
         try:
             message = json.loads(raw_message)
         except (TypeError, ValueError) as error:
-            msg = 'Error while trying to jsonify message with `{content}`'
-            msg = msg.format(content=raw_message)
-            LOGGER.warning(msg)
-            raise BadFormatMessageError(msg)
+            error_msg = 'Error while trying to jsonify message with `{content}`'
+            error_msg = error_msg.format(content=raw_message)
+            LOGGER.warning(error_msg)
+            raise BadFormatMessageError(error_msg, original_exception=str(error))
 
         if not isinstance(message, dict):
             # TODO: Handle here a dead letter queue after deciding
@@ -113,14 +106,18 @@ class WorkerChannel(ChannelHandler):
             raise BadFormatMessageError('Received message is not a dictionary')
 
         if not is_callable(self._on_message_callback):
+            LOGGER.info('Wrong callback is binded')
+            raise CallBackError('The callback is not callable')
+
+        try:
+            self._on_message_callback(message)
+            LOGGER.info('Received message # %s #', message)
+        except TypeError as error:
             LOGGER.info('Error on the callback definition. Message is not '
                         'acknowledge. And it will be keep on the RabbitMQ')
-            error_message = 'You should implement your callback with these ' \
-                            'arguments like my_callback(content)'
-            raise CallBackError(error_message)
-
-        self._on_message_callback(message)
-        LOGGER.info('Received message # %s #', message)
+            error_message = 'You should implement your callback ' \
+                            'like my_callback(content)'
+            raise CallBackError(error_message, original_exception=str(error))
 
     def on_message(self, channel, method, properties, body):
         try:
