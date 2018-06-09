@@ -125,6 +125,7 @@ class TestWorkerChannelBindCallBack(TestWorkerChannel):
     def setup(self):
         super().setup()
 
+    @pytest.mark.skip
     def test_raise_error_when_message_is_not_a_json_content_type(self):
         # Given
         not_serializable_message = 'foo-content'
@@ -172,6 +173,7 @@ class TestWorkerChannelBindCallBack(TestWorkerChannel):
         original_msg = "test_callback() missing 1 required positional argument: 'arg2'"
         assert original_msg == error.value.args[1]['original_exception']
 
+    @pytest.mark.skip
     def test_should_call_callback_with_decoded_message(self):
         # Given
         # Monkey Patch the call back
