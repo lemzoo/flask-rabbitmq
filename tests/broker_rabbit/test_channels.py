@@ -100,7 +100,7 @@ class TestWorkerChannel:
     def teardown_method(self):
         self.worker.close()
 
-    def test_raising_error_on_keyboard_interrupt(self):
+    def test_raise_error_on_keyboard_interrupt(self):
         # Given
         self.worker._channel.start_consuming.side_effect = KeyboardInterrupt()
 
@@ -111,11 +111,23 @@ class TestWorkerChannel:
         # Then
         assert 'Worker stopped pulling message' == error.value.args[0]
 
+    def test_raise_when_error_occurs_in_decode_message_content(self):
+        empty_body_as_bytes = b'{}'
+        self.worker.event_handler = Mock()
+
+        # When
+        self.worker.on_message(None, Basic.GetOk(), None, empty_body_as_bytes)
+
+        # Then
+        assert not self.worker.event_handler.execute_rabbit.called
+
     def test_execute_rabbit_is_not_called_when_exception_raised(self):
         empty_body_as_bytes = b'{}'
         self.worker.event_handler = Mock()
+
         # When
         self.worker.on_message(None, Basic.GetOk(), None, empty_body_as_bytes)
+
         # Then
         assert not self.worker.event_handler.execute_rabbit.called
 
