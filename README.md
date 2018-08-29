@@ -19,7 +19,6 @@ Requirements
 * Python 3 and requirements file dependencies
 * virtualenv
 * RabbitMQ
-* MongoDB database
 
 Install
 =======
