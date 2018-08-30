@@ -14,11 +14,12 @@ install:
 
 # Create a virtual host in RabbitMQ server
 before_script:
+  - echo $USERNAME
   - curl -i -u '$USERNAME:$PASSWORD' -X PUT 'http://localhost:15672/api/vhosts/$VHOST'
 
 # command to run tests
 script:
   - echo $VHOST
-  - curl -i -u '$USERNAME:$PASSWORD' -X PUT 'http://localhost:15672/api/permissions/$VHOST/$USERNAME' -d '{"configure": ".*", "write": ".*", "read": ".*"}'
-  - pytest tests
+  # - curl -i -u '$USERNAME:$PASSWORD' -X PUT 'http://localhost:15672/api/permissions/$VHOST/$USERNAME' -d '{"configure": ".*", "write": ".*", "read": ".*"}'
+  # - pytest tests
 
