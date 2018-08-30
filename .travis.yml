@@ -15,6 +15,7 @@ install:
 # Create a virtual host in RabbitMQ server
 before_script:
   - echo $USERNAME
+  - echo $PASSWORD
   - curl -i -u '$USERNAME:$PASSWORD' -X PUT 'http://localhost:15672/api/vhosts/$VHOST'
 
 # command to run tests
