@@ -13,13 +13,15 @@ install:
 
 # Environment variable
 env:
-  - USERNAME=guest
-  - PASSWORD=guest
-  - VHOST=test-flask-rabbitmq
-  - PERMISSION='{"configure": ".*", "write": ".*", "read": ".*"}'
+  - USERNAME="guest"
+  - PASSWORD="guest"
+  - VHOST="test-flask-rabbitmq"
 
 # command to run tests
 script:
-  - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/vhosts/$VHOST
-  - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/permissions/$VHOST/$USERNAME -d $PERMISSION
-  - pytest tests
+  - echo USERNAME
+  - echo PASSWORD
+  - echo $VHOST
+  - curl -i -u guest:guest -X PUT http://localhost:15672/api/vhosts/test-flask-rabbitmq
+  # - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/permissions/$VHOST/$USERNAME -d '{"configure": ".*", "write": ".*", "read": ".*"}'
+  # - pytest tests
