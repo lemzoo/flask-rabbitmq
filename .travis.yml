@@ -16,4 +16,4 @@ script:
   - echo $USERNAME
   - curl -i -u guest:guest -X PUT http://localhost:15672/api/vhosts/test-flask-rabbitmq
   - curl -i -u guest:guest -X PUT http://localhost:15672/api/permissions/test-flask-rabbitmq/guest -d '{"configure": ".*", "write": ".*", "read": ".*"}'
-  # - pytest tests
+  - pytest tests
