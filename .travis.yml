@@ -13,7 +13,6 @@ install:
 
 # command to run tests
 script:
-  - echo $USERNAME
-  - curl -i -u guest:guest -X PUT http://localhost:15672/api/vhosts/test-flask-rabbitmq
-  # - curl -i -u guest:guest -X PUT http://localhost:15672/api/permissions/test-flask-rabbitmq/guest -d '{"configure": ".*", "write": ".*", "read": ".*"}'
+  - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/vhosts/$VHOST
+  - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/permissions/$VHOST/$USERNAME -d '{"configure": ".*", "write": ".*", "read": ".*"}'
   - pytest tests
