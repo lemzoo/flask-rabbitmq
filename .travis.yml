@@ -13,9 +13,10 @@ install:
 
 # Environment variable
 env:
-  - USERNAME="guest"
-  - PASSWORD="guest"
-  - VHOST="test-flask-rabbitmq"
+  - global:
+    - USERNAME="guest"
+    - PASSWORD="guest"
+    - VHOST="test-flask-rabbitmq"
 
 # command to run tests
 script:
