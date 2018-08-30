@@ -15,13 +15,12 @@ install:
 # Create a virtual host in RabbitMQ server
 before_script:
   - echo '$USERNAME:$PASSWORD'
-  - echo http://localhost:15672/api/vhosts/$VHOST
-  - echo http://localhost:15672/api/permissions/$VHOST/$USERNAME
-  - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/vhosts/$VHOST
-  # - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/permissions/$VHOST/$USERNAME -d '{"configure": ".*", "write": ".*", "read": ".*"}'
-  # -d {"vhost": "test-flask-rabbitmq", "username": "guest", "configure": ".*", "write": ".*", "read": ".*"}
+  - echo $BASE_URL/vhosts/$VHOST
+  - echo $BASE_URL/permissions/$VHOST/$USERNAME
+  - curl -i -u $USERNAME:$PASSWORD -X PUT $BASE_URL/vhosts/$VHOST
+  - curl -i -u $USERNAME:$PASSWORD -X PUT $BASE_URL/permissions/$VHOST/$USERNAME -d '$PERMISSION'
 
 # command to run tests
 script:
-  - pytest tests
+  - pytest tests -x
 
