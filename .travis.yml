@@ -1,5 +1,6 @@
 sudo: required
 language: python
+cache: pip
 
 services:
   - rabbitmq
@@ -11,9 +12,12 @@ python:
 install:
   - pip install -r requirements.txt
 
+# Create a virtual host in RabbitMQ server
+before_script:
+  - curl -i -u $USERNAME:$PASSWORD -X PUT $BASE_URL/vhosts/$VHOST
+  - curl -i -u $USERNAME:$PASSWORD -X PUT $BASE_URL/permissions/$VHOST/$USERNAME -d {$PERMISSION}
+
 # command to run tests
 script:
-- echo $VHOST
-  - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/vhosts/$VHOST
-  - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/permissions/$VHOST/$USERNAME -d '{"configure": ".*", "write": ".*", "read": ".*"}'
-  - pytest tests
+  - pytest tests -x
+
