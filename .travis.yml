@@ -1,0 +1,19 @@
+sudo: required
+language: python
+
+services:
+  - rabbitmq
+
+python:
+  - "3.6.1"
+
+# command to install dependencies
+install:
+  - pip install -r requirements.txt
+
+# command to run tests
+script:
+  - echo $USERNAME
+  - curl -i -u guest:guest -X PUT http://localhost:15672/api/vhosts/test-flask-rabbitmq
+  - curl -i -u guest:guest -X PUT http://localhost:15672/api/permissions/test-flask-rabbitmq/guest -d '{"configure": ".*", "write": ".*", "read": ".*"}'
+  - pytest tests
