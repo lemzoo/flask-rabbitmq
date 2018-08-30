@@ -23,5 +23,5 @@ before_script:
 
 # command to run tests
 script:
-  # - pytest tests
+  - pytest tests
 
