@@ -16,5 +16,5 @@ install:
 script:
   - echo $VHOST
   - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/vhosts/$VHOST
-  - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/permissions/$VHOST/$USERNAME -d '{"configure": ".*", "write": ".*", "read": ".*"}'
-  - pytest tests
+  # - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/permissions/$VHOST/$USERNAME -d '{"configure": ".*", "write": ".*", "read": ".*"}'
+  # - pytest tests
