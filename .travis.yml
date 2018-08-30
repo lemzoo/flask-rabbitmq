@@ -18,11 +18,9 @@ before_script:
   - echo http://localhost:15672/api/vhosts/$VHOST
   - echo http://localhost:15672/api/permissions/$VHOST/$USERNAME
   - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/vhosts/$VHOST
-  - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/permissions/$VHOST/$USERNAME -d '{"configure": ".*", "write": ".*", "read": ".*"}'
+  # - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/permissions/$VHOST/$USERNAME -H "Content-Type: application/json" -d '{"configure": ".*", "write": ".*", "read": ".*"}'
 
 # command to run tests
 script:
-  - echo $VHOST
-  # - curl -i -u '$USERNAME:$PASSWORD' -X PUT 'http://localhost:15672/api/permissions/$VHOST/$USERNAME' -d '{"configure": ".*", "write": ".*", "read": ".*"}'
   # - pytest tests
 
