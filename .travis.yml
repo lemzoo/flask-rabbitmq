@@ -16,7 +16,9 @@ install:
 before_script:
   - echo $USERNAME:$PASSWORD
   - echo http://localhost:15672/api/vhosts/$VHOST
+  - echo http://localhost:15672/api/permissions/$VHOST/$USERNAME
   - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/vhosts/$VHOST
+  - curl -i -u $USERNAME:$PASSWORD -X PUT http://localhost:15672/api/permissions/$VHOST/$USERNAME -d '{"configure": ".*", "write": ".*", "read": ".*"}'
 
 # command to run tests
 script:
