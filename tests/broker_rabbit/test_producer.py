@@ -112,6 +112,7 @@ class TestProducerBootstrap(TestBase):
         channel = self.channel.get_channel()
         channel.close.assert_called_once()
 
+    @pytest.mark.skip
     def test_should_close_channel_at_the_end_while_error_occurred(
             self, exchange_mock, queue_mock):
         # Given
