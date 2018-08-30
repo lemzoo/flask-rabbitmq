@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/lemzoo/flask-rabbitmq.svg?branch=master)](https://travis-ci.org/lemzoo/flask-rabbitmq)
+
 # Flask with Rabbit MQ message broker in Python
 
 Overview
