@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from broker_rabbit.channels import ProducerChannel
 from broker_rabbit.exceptions import UnknownQueueError
 
 from broker_rabbit.connection_handler import ConnectionHandler
@@ -60,9 +61,9 @@ class BrokerRabbitMQ:
         connection = self.connection_handler.get_current_connection()
 
         # Setup default producer for broker_rabbit
-        self.producer = Producer(
-            connection, self.exchange_name,
-            self.application_id, self.delivery_mode)
+        channel = ProducerChannel(connection, self.application_id,
+                                  self.delivery_mode)
+        self.producer = Producer(channel, self.exchange_name)
         self.producer.bootstrap(self.queues)
 
     def send(self, queue, context={}):
