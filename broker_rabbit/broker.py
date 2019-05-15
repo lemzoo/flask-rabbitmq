@@ -72,8 +72,8 @@ class BrokerRabbitMQ:
         :param dict context: content of the message to post to RabbitMQ server
         """
         if queue not in self.queues:
-            message = 'Queue ‘{name}‘ is not registered'.format(name=queue)
-            raise UnknownQueueError(message)
+            error_msg = f'Queue ‘{queue}‘ is not registered'
+            raise UnknownQueueError(error_msg)
 
         message = {
             'created_at': datetime.utcnow().isoformat(),

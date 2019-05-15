@@ -6,8 +6,8 @@ from pika.connection import Connection
 from pika.spec import Basic
 
 from broker_rabbit.exceptions import (
-    ConnectionNotOpenedYetError, ConnectionIsClosed,
-    WorkerExitException, ChannelNotDefinedError)
+    ConnectionNotOpenedYetError, ConnectionIsClosedError,
+    WorkerExitError, ChannelNotDefinedError)
 
 from broker_rabbit.channels import (
     ChannelHandler, WorkerChannel, ProducerChannel,
@@ -44,7 +44,7 @@ class TestChannelHandler(RabbitBrokerTest):
         self.connection.close_connection()
 
         # When
-        with pytest.raises(ConnectionIsClosed) as error:
+        with pytest.raises(ConnectionIsClosedError) as error:
             self.channel_handler.open()
 
         # Then
@@ -105,7 +105,7 @@ class TestWorkerChannel:
         self.worker._channel.start_consuming.side_effect = KeyboardInterrupt()
 
         # When
-        with pytest.raises(WorkerExitException) as error:
+        with pytest.raises(WorkerExitError) as error:
             self.worker.run()
 
         # Then

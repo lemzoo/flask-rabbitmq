@@ -6,8 +6,7 @@ from pika.utils import is_callable
 
 from broker_rabbit.exceptions import (
     ConnectionNotOpenedYetError, ChannelNotDefinedError,
-    WorkerExitException, ConnectionIsClosed, BadFormatMessageError,
-    CallBackError)
+    WorkerExitError, ConnectionIsClosedError, CallBackError)
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
@@ -39,7 +38,7 @@ class ChannelHandler:
 
         if self._connection.is_closed:
             LOGGER.error('The connection is closed')
-            raise ConnectionIsClosed('The connection is closed')
+            raise ConnectionIsClosedError('The connection is closed')
 
         self._channel = self._connection.channel()
 
@@ -79,7 +78,7 @@ class WorkerChannel(ChannelHandler):
             self._channel.start_consuming()
         except KeyboardInterrupt:
             LOGGER.info('The Worker will be exit after CTRL+C signal')
-            raise WorkerExitException('Worker stopped pulling message')
+            raise WorkerExitError('Worker stopped pulling message')
         finally:
             self.close()
 

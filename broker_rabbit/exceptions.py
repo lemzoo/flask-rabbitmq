@@ -26,7 +26,7 @@ class ConnectionIsAlreadyInUse(BrokerRabbitException):
     pass
 
 
-class ConnectionIsClosed(BrokerRabbitException):
+class ConnectionIsClosedError(BrokerRabbitException):
     pass
 
 
@@ -34,7 +34,7 @@ class QueueDoesNotExistError(BrokerRabbitException):
     pass
 
 
-class WorkerExitException(BrokerRabbitException):
+class WorkerExitError(BrokerRabbitException):
     pass
 
 
