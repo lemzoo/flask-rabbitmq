@@ -44,8 +44,8 @@ class TestProducer(TestBase):
             self.producer.publish(unknown_queue, self.message)
 
         # Then
-        error_message = 'This queue ’UNKNOWN’ is not declared. Please call ' \
-                        'bootstrap before using publish'
+        error_message = 'This queue ’UNKNOWN’ is not declared.' \
+                        'Please call bootstrap before using publish'
 
         assert error_message == error.value.args[0]
 
