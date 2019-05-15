@@ -1,5 +1,5 @@
-Flask==0.12.2
+Flask==1.0.2
 Flask-Script==2.0.6
 pika==0.10.0
 pyrabbit==1.1.0
-pytest==3.6.0
+pytest==4.5.0
