@@ -5,7 +5,7 @@ import pika
 from pika.utils import is_callable
 
 from broker_rabbit.exceptions import (
-    ConnectionNotOpenedYetError, ChannelNotDefinedError,
+    ConnectionNotOpenedError, ChannelNotDefinedError,
     WorkerExitError, ConnectionIsClosedError, CallBackError)
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
@@ -34,7 +34,7 @@ class ChannelHandler:
         LOGGER.info('Opening channel for the producer')
         if self._connection is None:
             LOGGER.error('The connection is not opened')
-            raise ConnectionNotOpenedYetError('The connection is not opened')
+            raise ConnectionNotOpenedError('The connection is not opened')
 
         if self._connection.is_closed:
             LOGGER.error('The connection is closed')

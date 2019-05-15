@@ -5,7 +5,7 @@ import pytest
 from broker_rabbit.channels import ProducerChannel
 from broker_rabbit.connection_handler import ConnectionHandler
 from broker_rabbit.exceptions import (QueueDoesNotExistError,
-                                      ConnectionNotOpenedYetError)
+                                      ConnectionNotOpenedError)
 from broker_rabbit.producer import Producer
 
 from tests import common
@@ -122,7 +122,7 @@ class TestProducerBootstrap(TestBase):
         # Given
         channel = self.channel.get_channel()
         error_msg = 'connection not opened'
-        channel.open.side_effect = ConnectionNotOpenedYetError(error_msg)
+        channel.open.side_effect = ConnectionNotOpenedError(error_msg)
 
         # When
         self.producer.bootstrap(self.queues)

@@ -6,7 +6,7 @@ from pika.connection import Connection
 from pika.spec import Basic
 
 from broker_rabbit.exceptions import (
-    ConnectionNotOpenedYetError, ConnectionIsClosedError,
+    ConnectionNotOpenedError, ConnectionIsClosedError,
     WorkerExitError, ChannelNotDefinedError, BadFormatMessageError,
     CallBackError)
 
@@ -33,7 +33,7 @@ class TestChannelHandler(RabbitBrokerTest):
         channel_handler = ChannelHandler(connection)
 
         # When
-        with pytest.raises(ConnectionNotOpenedYetError) as error:
+        with pytest.raises(ConnectionNotOpenedError) as error:
             channel_handler.open()
 
         # Then
