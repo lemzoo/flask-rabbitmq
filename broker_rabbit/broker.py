@@ -7,9 +7,9 @@ from broker_rabbit.connection_handler import ConnectionHandler
 from broker_rabbit.producer import Producer
 
 DEFAULT_URL = 'amqp://test:test@localhost:5672/foo-test'
-DEFAULT_EXCHANGE_NAME = 'FOO-EXCHANGE'
-DEFAULT_APPLICATION_ID = 'FOO-APPLICATION-ID'
-DEFAULT_DELIVERY_MODE = 2
+DEFAULT_EXCHANGE = 'FOO-EXCHANGE'
+DEFAULT_APP = 'FOO-APPLICATION-ID'
+DEFAULT_DELIVERY = 2
 STATUS_READY = 'READY'
 
 
@@ -28,6 +28,7 @@ class BrokerRabbitMQ:
         self.exchange_name = None
         self.application_id = None
         self.delivery_mode = None
+        self.queues = None
         self.on_message_callback = None
 
     def init_app(self, app, queues, on_message_callback):
@@ -50,9 +51,9 @@ class BrokerRabbitMQ:
             raise RuntimeError('Extension already initialized')
 
         self.url = app.config.get('RABBIT_MQ_URL', DEFAULT_URL)
-        self.exchange_name = app.config.get('EXCHANGE_NAME', DEFAULT_EXCHANGE_NAME)
-        self.application_id = app.config.get('APPLICATION_ID', DEFAULT_APPLICATION_ID)
-        self.delivery_mode = app.config.get('DELIVERY_MODE', DEFAULT_DELIVERY_MODE)
+        self.exchange_name = app.config.get('EXCHANGE_NAME', DEFAULT_EXCHANGE)
+        self.application_id = app.config.get('APPLICATION_ID', DEFAULT_APP)
+        self.delivery_mode = app.config.get('DELIVERY_MODE', DEFAULT_DELIVERY)
         self.queues = queues
         self.on_message_callback = on_message_callback
 
