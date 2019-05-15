@@ -4,11 +4,11 @@ import pytest
 
 from broker_rabbit.channels import ProducerChannel
 from broker_rabbit.connection_handler import ConnectionHandler
-from broker_rabbit.exceptions import QueueDoesNotExist, ConnectionNotOpenedYet
+from broker_rabbit.exceptions import (QueueDoesNotExistError,
+                                      ConnectionNotOpenedError)
 from broker_rabbit.producer import Producer
 
 from tests import common
-
 
 
 class TestBase:
@@ -18,13 +18,13 @@ class TestBase:
         self.exchange_name = 'TEST-EXCHANGE-NAME'
         self.application_id = 'TEST-APPLICATION-ID'
         self.delivery_mode = 2
-        channel_handler = ProducerChannel(
-            current_connection, self.application_id, self.delivery_mode)
+        channel_handler = ProducerChannel(current_connection,
+                                          self.application_id,
+                                          self.delivery_mode)
         channel_handler.open()
         self.channel = channel_handler.get_channel()
         self.channel = Mock(ProducerChannel)
-        self.message = "TEST-CONTENT-MESSAGE"
-
+        self.message = {"content": "TEST-CONTENT-MESSAGE"}
 
 
 @pytest.mark.unit_test
@@ -40,12 +40,12 @@ class TestProducer(TestBase):
         unknown_queue = 'UNKNOWN'
 
         # When
-        with pytest.raises(QueueDoesNotExist) as error:
+        with pytest.raises(QueueDoesNotExistError) as error:
             self.producer.publish(unknown_queue, self.message)
 
         # Then
-        error_message = 'This queue ’UNKNOWN’ is not declared. Please call ' \
-                        'bootstrap before using publish'
+        error_message = 'This queue ’UNKNOWN’ is not declared.' \
+                        'Please call bootstrap before using publish'
 
         assert error_message == error.value.args[0]
 
@@ -76,8 +76,6 @@ class TestProducer(TestBase):
         assert self.channel.close.called is True
 
 
-@patch('broker_rabbit.producer.QueueHandler')
-@patch('broker_rabbit.producer.ExchangeHandler')
 class TestProducerBootstrap(TestBase):
 
     def setup(self):
@@ -85,26 +83,33 @@ class TestProducerBootstrap(TestBase):
         self.producer = Producer(self.channel, self.exchange_name)
         self.queues = ['queue-1', 'queue-2', 'queue-3', 'queue-4']
 
-    def test_should_setup_exchange(self, exchange_mock, queue_mock):
+        queue_handler = patch('broker_rabbit.producer.QueueHandler')
+        self.queue_handler = queue_handler.start()
+
+        exchange_handler = patch('broker_rabbit.producer.ExchangeHandler')
+        self.exchange_handler = exchange_handler.start()
+
+    def test_should_setup_exchange(self):
         # When
         self.producer.bootstrap(self.queues)
 
         # Then
         channel = self.channel.get_channel()
-        exchange_mock.assert_called_once_with(channel, self.exchange_name)
-        exchange_mock().setup_exchange.assert_called_once()
+        self.exchange_handler.assert_called_once_with(channel,
+                                                      self.exchange_name)
+        self.exchange_handler().setup_exchange.assert_called_once()
 
-    def test_should_setup_queue(self, exchange_mock, queue_mock):
+    def test_should_setup_queue(self):
         # When
         self.producer.bootstrap(self.queues)
 
         # Then
         channel = self.channel.get_channel()
-        queue_mock.assert_called_once_with(channel, self.exchange_name)
-        assert 4 == queue_mock().setup_queue.call_count
+        self.queue_handler.assert_called_once_with(channel, self.exchange_name)
+        assert 4 == self.queue_handler().setup_queue.call_count
 
     @pytest.mark.skip
-    def test_should_close_channel_at_the_end(self, exchange_mock, queue_mock):
+    def test_should_close_channel_at_the_end(self):
         # When
         self.producer.bootstrap(self.queues)
 
@@ -113,12 +118,11 @@ class TestProducerBootstrap(TestBase):
         channel.close.assert_called_once()
 
     @pytest.mark.skip
-    def test_should_close_channel_at_the_end_while_error_occurred(
-            self, exchange_mock, queue_mock):
+    def test_should_close_channel_at_the_end_while_error_occurred(self):
         # Given
         channel = self.channel.get_channel()
-        channel.open.side_effect = ConnectionNotOpenedYet(
-            'connection not opened')
+        error_msg = 'connection not opened'
+        channel.open.side_effect = ConnectionNotOpenedError(error_msg)
 
         # When
         self.producer.bootstrap(self.queues)

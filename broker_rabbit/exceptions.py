@@ -2,6 +2,7 @@ class BrokerRabbitException(Exception):
     def __init__(self, args, **kwargs):
         super().__init__(args, kwargs)
 
+
 class UnknownQueueError(BrokerRabbitException):
     pass
 
@@ -18,7 +19,7 @@ class ChannelIsAlreadyInUse(BrokerRabbitException):
     pass
 
 
-class ConnectionNotOpenedYet(BrokerRabbitException):
+class ConnectionNotOpenedError(BrokerRabbitException):
     pass
 
 
@@ -26,22 +27,20 @@ class ConnectionIsAlreadyInUse(BrokerRabbitException):
     pass
 
 
-class ConnectionIsClosed(BrokerRabbitException):
+class ConnectionIsClosedError(BrokerRabbitException):
     pass
 
 
-class QueueDoesNotExist(BrokerRabbitException):
+class QueueDoesNotExistError(BrokerRabbitException):
     pass
 
 
-class WorkerExitException(BrokerRabbitException):
+class WorkerExitError(BrokerRabbitException):
     pass
-
 
 
 class BadFormatMessageError(BrokerRabbitException):
     pass
-
 
 
 class CallBackError(BrokerRabbitException):

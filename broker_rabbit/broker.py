@@ -1,14 +1,15 @@
 from datetime import datetime
 
+from broker_rabbit.channels import ProducerChannel
 from broker_rabbit.exceptions import UnknownQueueError
 
 from broker_rabbit.connection_handler import ConnectionHandler
 from broker_rabbit.producer import Producer
 
 DEFAULT_URL = 'amqp://test:test@localhost:5672/foo-test'
-DEFAULT_EXCHANGE_NAME = 'FOO-EXCHANGE'
-DEFAULT_APPLICATION_ID = 'FOO-APPLICATION-ID'
-DEFAULT_DELIVERY_MODE = 2
+DEFAULT_EXCHANGE = 'FOO-EXCHANGE'
+DEFAULT_APP = 'FOO-APPLICATION-ID'
+DEFAULT_DELIVERY = 2
 STATUS_READY = 'READY'
 
 
@@ -27,6 +28,7 @@ class BrokerRabbitMQ:
         self.exchange_name = None
         self.application_id = None
         self.delivery_mode = None
+        self.queues = None
         self.on_message_callback = None
 
     def init_app(self, app, queues, on_message_callback):
@@ -49,9 +51,9 @@ class BrokerRabbitMQ:
             raise RuntimeError('Extension already initialized')
 
         self.url = app.config.get('RABBIT_MQ_URL', DEFAULT_URL)
-        self.exchange_name = app.config.get('EXCHANGE_NAME', DEFAULT_EXCHANGE_NAME)
-        self.application_id = app.config.get('APPLICATION_ID', DEFAULT_APPLICATION_ID)
-        self.delivery_mode = app.config.get('DELIVERY_MODE', DEFAULT_DELIVERY_MODE)
+        self.exchange_name = app.config.get('EXCHANGE_NAME', DEFAULT_EXCHANGE)
+        self.application_id = app.config.get('APPLICATION_ID', DEFAULT_APP)
+        self.delivery_mode = app.config.get('DELIVERY_MODE', DEFAULT_DELIVERY)
         self.queues = queues
         self.on_message_callback = on_message_callback
 
@@ -60,9 +62,9 @@ class BrokerRabbitMQ:
         connection = self.connection_handler.get_current_connection()
 
         # Setup default producer for broker_rabbit
-        self.producer = Producer(
-            connection, self.exchange_name,
-            self.application_id, self.delivery_mode)
+        channel = ProducerChannel(connection, self.application_id,
+                                  self.delivery_mode)
+        self.producer = Producer(channel, self.exchange_name)
         self.producer.bootstrap(self.queues)
 
     def send(self, queue, context={}):
@@ -72,8 +74,8 @@ class BrokerRabbitMQ:
         :param dict context: content of the message to post to RabbitMQ server
         """
         if queue not in self.queues:
-            message = 'Queue ‘{name}‘ is not registered'.format(name=queue)
-            raise UnknownQueueError(message)
+            error_msg = f'Queue ‘{queue}‘ is not registered'
+            raise UnknownQueueError(error_msg)
 
         message = {
             'created_at': datetime.utcnow().isoformat(),

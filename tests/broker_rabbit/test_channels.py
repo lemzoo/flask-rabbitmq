@@ -6,12 +6,12 @@ from pika.connection import Connection
 from pika.spec import Basic
 
 from broker_rabbit.exceptions import (
-    ConnectionNotOpenedYet, ConnectionIsClosed,
-    WorkerExitException, ChannelNotDefinedError)
+    ConnectionNotOpenedError, ConnectionIsClosedError,
+    WorkerExitError, ChannelNotDefinedError, BadFormatMessageError,
+    CallBackError)
 
-from broker_rabbit.channels import (
-    ChannelHandler, WorkerChannel, ProducerChannel,
-    BadFormatMessageError, CallBackError)
+from broker_rabbit.channels import (ChannelHandler, WorkerChannel,
+                                    ProducerChannel)
 
 from broker_rabbit.connection_handler import ConnectionHandler
 
@@ -22,7 +22,7 @@ from tests.base_test import RabbitBrokerTest
 # TODO: Test the new added method
 @pytest.mark.functional_test
 class TestChannelHandler(RabbitBrokerTest):
-    def setup_method(self):
+    def setup_method(self, method):
         self.connection = ConnectionHandler(common.BROKER_URL_TEST)
         current_connection = self.connection.get_current_connection()
         self.channel_handler = ChannelHandler(current_connection)
@@ -33,7 +33,7 @@ class TestChannelHandler(RabbitBrokerTest):
         channel_handler = ChannelHandler(connection)
 
         # When
-        with pytest.raises(ConnectionNotOpenedYet) as error:
+        with pytest.raises(ConnectionNotOpenedError) as error:
             channel_handler.open()
 
         # Then
@@ -44,7 +44,7 @@ class TestChannelHandler(RabbitBrokerTest):
         self.connection.close_connection()
 
         # When
-        with pytest.raises(ConnectionIsClosed) as error:
+        with pytest.raises(ConnectionIsClosedError) as error:
             self.channel_handler.open()
 
         # Then
@@ -105,7 +105,7 @@ class TestWorkerChannel:
         self.worker._channel.start_consuming.side_effect = KeyboardInterrupt()
 
         # When
-        with pytest.raises(WorkerExitException) as error:
+        with pytest.raises(WorkerExitError) as error:
             self.worker.run()
 
         # Then
@@ -147,8 +147,8 @@ class TestWorkerChannelBindCallBack(TestWorkerChannel):
             self.worker.bind_callback(not_serializable_message)
 
         # Then
-        expected_msg = 'Error while trying to jsonify message with `foo-content`'
-        assert expected_msg == error.value.args[0]
+        expected = 'Error while trying to jsonify message with `foo-content`'
+        assert expected == error.value.args[0]
         original_msg = 'Expecting value: line 1 column 1 (char 0)'
         assert original_msg == error.value.args[1]['original_exception']
 
@@ -182,8 +182,8 @@ class TestWorkerChannelBindCallBack(TestWorkerChannel):
         error_message = 'You should implement your callback ' \
                         'like my_callback(content)'
         assert error_message == error.value.args[0]
-        original_msg = "test_callback() missing 1 required positional argument: 'arg2'"
-        assert original_msg == error.value.args[1]['original_exception']
+        orig = "test_callback() missing 1 required positional argument: 'arg2'"
+        assert orig == error.value.args[1]['original_exception']
 
     @pytest.mark.skip
     def test_should_call_callback_with_decoded_message(self):
