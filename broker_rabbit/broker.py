@@ -15,13 +15,12 @@ STATUS_READY = 'READY'
 class BrokerRabbitMQ:
     """Message Broker based on RabbitMQ middleware"""
 
-    def __init__(self, app=None, queues=None):
+    def __init__(self, app=None):
         """
         Create a new instance of Broker Rabbit by using
         the given parameters to connect to RabbitMQ.
         """
         self.app = app
-        self.queues = queues
         self.connection_handler = None
         self.producer = None
         self.url = None
@@ -29,9 +28,6 @@ class BrokerRabbitMQ:
         self.application_id = None
         self.delivery_mode = None
         self.on_message_callback = None
-
-        if self.app is not None:
-            self.init_app(self.app, self.queues)
 
     def init_app(self, app, queues, on_message_callback):
         """ Init the Broker by using the given configuration instead
