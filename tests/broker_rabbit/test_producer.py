@@ -4,7 +4,8 @@ import pytest
 
 from broker_rabbit.channels import ProducerChannel
 from broker_rabbit.connection_handler import ConnectionHandler
-from broker_rabbit.exceptions import QueueDoesNotExistError, ConnectionNotOpenedYetError
+from broker_rabbit.exceptions import (QueueDoesNotExistError,
+                                      ConnectionNotOpenedYetError)
 from broker_rabbit.producer import Producer
 
 from tests import common
@@ -75,8 +76,6 @@ class TestProducer(TestBase):
         assert self.channel.close.called is True
 
 
-@patch('broker_rabbit.producer.QueueHandler')
-@patch('broker_rabbit.producer.ExchangeHandler')
 class TestProducerBootstrap(TestBase):
 
     def setup(self):
@@ -96,7 +95,8 @@ class TestProducerBootstrap(TestBase):
 
         # Then
         channel = self.channel.get_channel()
-        self.exchange_handler.assert_called_once_with(channel, self.exchange_name)
+        self.exchange_handler.assert_called_once_with(channel,
+                                                      self.exchange_name)
         self.exchange_handler().setup_exchange.assert_called_once()
 
     def test_should_setup_queue(self):
@@ -121,7 +121,8 @@ class TestProducerBootstrap(TestBase):
     def test_should_close_channel_at_the_end_while_error_occurred(self):
         # Given
         channel = self.channel.get_channel()
-        channel.open.side_effect = ConnectionNotOpenedYetError('connection not opened')
+        error_msg = 'connection not opened'
+        channel.open.side_effect = ConnectionNotOpenedYetError(error_msg)
 
         # When
         self.producer.bootstrap(self.queues)
