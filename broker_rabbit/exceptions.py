@@ -18,7 +18,7 @@ class ChannelIsAlreadyInUse(BrokerRabbitException):
     pass
 
 
-class ConnectionNotOpenedYet(BrokerRabbitException):
+class ConnectionNotOpenedYetError(BrokerRabbitException):
     pass
 
 

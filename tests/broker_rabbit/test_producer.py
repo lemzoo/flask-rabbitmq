@@ -4,11 +4,10 @@ import pytest
 
 from broker_rabbit.channels import ProducerChannel
 from broker_rabbit.connection_handler import ConnectionHandler
-from broker_rabbit.exceptions import QueueDoesNotExistError, ConnectionNotOpenedYet
+from broker_rabbit.exceptions import QueueDoesNotExistError, ConnectionNotOpenedYetError
 from broker_rabbit.producer import Producer
 
 from tests import common
-
 
 
 class TestBase:
@@ -18,8 +17,9 @@ class TestBase:
         self.exchange_name = 'TEST-EXCHANGE-NAME'
         self.application_id = 'TEST-APPLICATION-ID'
         self.delivery_mode = 2
-        channel_handler = ProducerChannel(
-            current_connection, self.application_id, self.delivery_mode)
+        channel_handler = ProducerChannel(current_connection,
+                                          self.application_id,
+                                          self.delivery_mode)
         channel_handler.open()
         self.channel = channel_handler.get_channel()
         self.channel = Mock(ProducerChannel)
@@ -117,7 +117,7 @@ class TestProducerBootstrap(TestBase):
             self, exchange_mock, queue_mock):
         # Given
         channel = self.channel.get_channel()
-        channel.open.side_effect = ConnectionNotOpenedYet(
+        channel.open.side_effect = ConnectionNotOpenedYetError(
             'connection not opened')
 
         # When
