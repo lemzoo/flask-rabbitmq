@@ -4,7 +4,7 @@ import pytest
 
 from broker_rabbit.channels import ProducerChannel
 from broker_rabbit.connection_handler import ConnectionHandler
-from broker_rabbit.exceptions import QueueDoesNotExist, ConnectionNotOpenedYet
+from broker_rabbit.exceptions import QueueDoesNotExistError, ConnectionNotOpenedYet
 from broker_rabbit.producer import Producer
 
 from tests import common
@@ -40,7 +40,7 @@ class TestProducer(TestBase):
         unknown_queue = 'UNKNOWN'
 
         # When
-        with pytest.raises(QueueDoesNotExist) as error:
+        with pytest.raises(QueueDoesNotExistError) as error:
             self.producer.publish(unknown_queue, self.message)
 
         # Then

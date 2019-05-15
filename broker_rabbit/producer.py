@@ -1,4 +1,4 @@
-from broker_rabbit.exceptions import QueueDoesNotExist
+from broker_rabbit.exceptions import QueueDoesNotExistError
 from broker_rabbit.channels import ProducerChannel
 from broker_rabbit.exchange_handler import ExchangeHandler
 from broker_rabbit.queue_handler import QueueHandler
@@ -16,7 +16,6 @@ class Producer:
 
         if queues:
             self.bootstrap(queues)
-
 
     def bootstrap(self, queues):
         """Initialize the queue on RabbitMQ
@@ -45,9 +44,9 @@ class Producer:
         """
 
         if queue not in self._queues:
-            raise QueueDoesNotExist(
-                'This queue ’{queue}’ is not declared. Please call '
-                'bootstrap before using publish'.format(queue=queue))
+            error_msg = f'This queue ’{queue}’ is not declared.' \
+                f'Please call bootstrap before using publish'
+            raise QueueDoesNotExistError(error_msg)
 
         self._channel.open()
         try:
