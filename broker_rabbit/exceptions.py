@@ -2,6 +2,7 @@ class BrokerRabbitException(Exception):
     def __init__(self, args, **kwargs):
         super().__init__(args, kwargs)
 
+
 class UnknownQueueError(BrokerRabbitException):
     pass
 
@@ -38,10 +39,8 @@ class WorkerExitError(BrokerRabbitException):
     pass
 
 
-
 class BadFormatMessageError(BrokerRabbitException):
     pass
-
 
 
 class CallBackError(BrokerRabbitException):
