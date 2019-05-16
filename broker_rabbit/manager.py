@@ -1,7 +1,7 @@
 from flask import current_app
 from flask_script import Manager
 
-from broker_rabbit.exceptions import BrokerRabbitException
+from broker_rabbit.exceptions import BrokerRabbitError
 from broker_rabbit.worker import Worker
 from broker_rabbit.connection_handler import ConnectionHandler
 
@@ -12,7 +12,7 @@ def _get_broker_extension():
     broker_app = current_app.extensions.get('broker_rabbit')
 
     if not broker_app:
-        raise BrokerRabbitException('Extension `broker_rabbit` is not'
+        raise BrokerRabbitError('Extension `broker_rabbit` is not'
                                     'initialized. Call broker.init_app')
     return broker_app
 

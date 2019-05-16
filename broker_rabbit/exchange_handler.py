@@ -1,4 +1,4 @@
-from broker_rabbit.exceptions import ChannelNotDefinedError, ExchangeNotDefinedYet
+from broker_rabbit.exceptions import ChannelNotDefinedError, ExchangeNotDefinedError
 
 
 class ExchangeHandler:
@@ -41,6 +41,6 @@ class ExchangeHandler:
     @property
     def name(self):
         if self._name is None:
-            raise ExchangeNotDefinedYet('The exchange is not defined')
+            raise ExchangeNotDefinedError('The exchange is not defined')
 
         return self._name

@@ -4,7 +4,7 @@ import pytest
 from pika import BlockingConnection
 
 from broker_rabbit.exceptions import (ChannelNotDefinedError,
-                                      ExchangeNotDefinedYet)
+                                      ExchangeNotDefinedError)
 from broker_rabbit.queue_handler import QueueHandler
 
 
@@ -26,7 +26,7 @@ class TestQueueHandler:
         queue_handler = QueueHandler(channel, None)
 
         # When
-        with pytest.raises(ExchangeNotDefinedYet) as error:
+        with pytest.raises(ExchangeNotDefinedError) as error:
             queue_handler.setup_queue(None)
 
         # Then
