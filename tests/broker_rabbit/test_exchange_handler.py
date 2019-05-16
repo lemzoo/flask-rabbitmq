@@ -2,7 +2,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from broker_rabbit.exceptions import ChannelUndefinedError, ExchangeUndefinedError
+from broker_rabbit.exceptions import (ChannelUndefinedError,
+                                      ExchangeUndefinedError)
 from broker_rabbit.exchange_handler import ExchangeHandler
 
 
