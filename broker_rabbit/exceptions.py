@@ -1,47 +1,47 @@
-class BrokerRabbitException(Exception):
-    def __init__(self, args, **kwargs):
+class BrokerRabbitError(Exception):
+    def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
 
 
-class UnknownQueueError(BrokerRabbitException):
+class UnknownQueueError(BrokerRabbitError):
     pass
 
 
-class ExchangeNotDefinedYet(BrokerRabbitException):
+class ExchangeUndefinedError(BrokerRabbitError):
     pass
 
 
-class ChannelNotDefinedError(BrokerRabbitException):
+class ChannelUndefinedError(BrokerRabbitError):
     pass
 
 
-class ChannelIsAlreadyInUse(BrokerRabbitException):
+class ChannelIsAlreadyInUseError(BrokerRabbitError):
     pass
 
 
-class ConnectionNotOpenedError(BrokerRabbitException):
+class ConnectionNotOpenedError(BrokerRabbitError):
     pass
 
 
-class ConnectionIsAlreadyInUse(BrokerRabbitException):
+class ConnectionIsAlreadyInUseError(BrokerRabbitError):
     pass
 
 
-class ConnectionIsClosedError(BrokerRabbitException):
+class ConnectionIsClosedError(BrokerRabbitError):
     pass
 
 
-class QueueDoesNotExistError(BrokerRabbitException):
+class QueueDoesNotExistError(BrokerRabbitError):
     pass
 
 
-class WorkerExitError(BrokerRabbitException):
+class WorkerExitError(BrokerRabbitError):
     pass
 
 
-class BadFormatMessageError(BrokerRabbitException):
+class BadFormatMessageError(BrokerRabbitError):
     pass
 
 
-class CallBackError(BrokerRabbitException):
+class CallBackError(BrokerRabbitError):
     pass

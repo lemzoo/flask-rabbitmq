@@ -1,5 +1,5 @@
-from broker_rabbit.exceptions import (ChannelNotDefinedError,
-                                      ExchangeNotDefinedYet)
+from broker_rabbit.exceptions import (ChannelUndefinedError,
+                                      ExchangeUndefinedError)
 
 
 class QueueHandler:
@@ -33,10 +33,10 @@ class QueueHandler:
 
     def _check_basic_config(self):
         if self._channel is None:
-            raise ChannelNotDefinedError('The Channel is not defined yet')
+            raise ChannelUndefinedError('The Channel is not defined yet')
 
         if self._exchange is None:
-            raise ExchangeNotDefinedYet('The exchange is not defined')
+            raise ExchangeUndefinedError('The exchange is not defined')
 
     def create_queue(self, queue_name, durable=True, auto_delete=False):
         """Create a new queue with the arguments such as its name.

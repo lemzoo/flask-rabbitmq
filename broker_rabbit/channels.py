@@ -5,7 +5,7 @@ import pika
 from pika.utils import is_callable
 
 from broker_rabbit.exceptions import (
-    ConnectionNotOpenedError, ChannelNotDefinedError,
+    ConnectionNotOpenedError, ChannelUndefinedError,
     WorkerExitError, ConnectionIsClosedError, CallBackError)
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
@@ -50,7 +50,7 @@ class ChannelHandler:
         LOGGER.info('Getting the channel object')
         if self._channel is None:
             LOGGER.error('The channel doesn''t exist yet')
-            raise ChannelNotDefinedError('The channel does not exist yet')
+            raise ChannelUndefinedError('The channel does not exist yet')
 
         return self._channel
 

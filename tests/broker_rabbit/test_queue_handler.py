@@ -3,8 +3,8 @@ from unittest.mock import Mock
 import pytest
 from pika import BlockingConnection
 
-from broker_rabbit.exceptions import (ChannelNotDefinedError,
-                                      ExchangeNotDefinedYet)
+from broker_rabbit.exceptions import (ChannelUndefinedError,
+                                      ExchangeUndefinedError)
 from broker_rabbit.queue_handler import QueueHandler
 
 
@@ -13,11 +13,11 @@ class TestQueueHandler:
     def test_setup_raise_when_channel_is_not_defined(self):
         queue_handler = QueueHandler(None, None)
 
-        with pytest.raises(ChannelNotDefinedError) as error:
+        with pytest.raises(ChannelUndefinedError) as error:
             queue_handler.setup_queue(None)
 
         # Then
-        assert 'The Channel is not defined yet' == error.value.args[0]
+        assert 'The Channel is not defined yet' == error.value.args[0][0]
 
     def test_setup_raises_when_exchange_is_not_defined(self):
         # Given
@@ -26,11 +26,11 @@ class TestQueueHandler:
         queue_handler = QueueHandler(channel, None)
 
         # When
-        with pytest.raises(ExchangeNotDefinedYet) as error:
+        with pytest.raises(ExchangeUndefinedError) as error:
             queue_handler.setup_queue(None)
 
         # Then
-        assert 'The exchange is not defined' == error.value.args[0]
+        assert 'The exchange is not defined' == error.value.args[0][0]
 
     def test_setup_queue(self):
         # Given
