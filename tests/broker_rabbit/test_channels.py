@@ -37,7 +37,7 @@ class TestChannelHandler(RabbitBrokerTest):
             channel_handler.open()
 
         # Then
-        assert 'The connection is not opened' == error.value.args[0]
+        assert 'The connection is not opened' == error.value.args[0][0]
 
     def test_should_raise_when_connection_is_closed(self):
         # Given
@@ -48,7 +48,7 @@ class TestChannelHandler(RabbitBrokerTest):
             self.channel_handler.open()
 
         # Then
-        assert 'The connection is closed' == error.value.args[0]
+        assert 'The connection is closed' == error.value.args[0][0]
 
     def test_should_open_channel(self):
         # When
@@ -56,16 +56,6 @@ class TestChannelHandler(RabbitBrokerTest):
 
         # Then
         assert self.channel_handler.get_channel().is_open is True
-
-    def test_should_close_channel(self):
-        # Given
-        self.channel_handler.open()
-
-        # When
-        self.channel_handler.close()
-
-        # Then
-        assert self.channel_handler.get_channel().is_closed is True
 
     def test_should_close_channel(self):
         # Given
@@ -86,7 +76,7 @@ class TestChannelHandler(RabbitBrokerTest):
             self.channel_handler.get_channel()
 
         # Then
-        assert 'The channel does not exist yet' == error.value.args[0]
+        assert 'The channel does not exist yet' == error.value.args[0][0]
 
 
 @pytest.mark.unit_test
@@ -109,7 +99,7 @@ class TestWorkerChannel:
             self.worker.run()
 
         # Then
-        assert 'Worker stopped pulling message' == error.value.args[0]
+        assert 'Worker stopped pulling message' == error.value.args[0][0]
 
     def test_raise_when_error_occurs_in_decode_message_content(self):
         empty_body_as_bytes = b'{}'
@@ -148,7 +138,7 @@ class TestWorkerChannelBindCallBack(TestWorkerChannel):
 
         # Then
         expected = 'Error while trying to jsonify message with `foo-content`'
-        assert expected == error.value.args[0]
+        assert expected == error.value.args[0][0]
         original_msg = 'Expecting value: line 1 column 1 (char 0)'
         assert original_msg == error.value.args[1]['original_exception']
 
@@ -161,7 +151,7 @@ class TestWorkerChannelBindCallBack(TestWorkerChannel):
             self.worker.bind_callback(raw_message)
 
         # Then
-        assert 'The callback is not callable' == error.value.args[0]
+        assert 'The callback is not callable' == error.value.args[0][0]
 
     def test_should_raise_callback_with_decoded_message(self):
         # Given
@@ -181,7 +171,7 @@ class TestWorkerChannelBindCallBack(TestWorkerChannel):
         # Then
         error_message = 'You should implement your callback ' \
                         'like my_callback(content)'
-        assert error_message == error.value.args[0]
+        assert error_message == error.value.args[0][0]
         orig = "test_callback() missing 1 required positional argument: 'arg2'"
         assert orig == error.value.args[1]['original_exception']
 

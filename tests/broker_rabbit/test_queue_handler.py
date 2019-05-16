@@ -17,7 +17,7 @@ class TestQueueHandler:
             queue_handler.setup_queue(None)
 
         # Then
-        assert 'The Channel is not defined yet' == error.value.args[0]
+        assert 'The Channel is not defined yet' == error.value.args[0][0]
 
     def test_setup_raises_when_exchange_is_not_defined(self):
         # Given
@@ -30,7 +30,7 @@ class TestQueueHandler:
             queue_handler.setup_queue(None)
 
         # Then
-        assert 'The exchange is not defined' == error.value.args[0]
+        assert 'The exchange is not defined' == error.value.args[0][0]
 
     def test_setup_queue(self):
         # Given

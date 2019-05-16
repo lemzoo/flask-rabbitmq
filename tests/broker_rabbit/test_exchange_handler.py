@@ -20,7 +20,7 @@ class TestExchangeHandler:
             exchange_handler.setup_exchange()
 
         # Then
-        assert 'The channel was not defined' == error.value.args[0]
+        assert 'The channel was not defined' == error.value.args[0][0]
 
     def test_should_setup_exchange_via_channel(self):
         # Given
@@ -45,7 +45,7 @@ class TestExchangeHandler:
             exchange_handler.name
 
         # Then
-        assert 'The exchange is not defined' == error.value.args[0]
+        assert 'The exchange is not defined' == error.value.args[0][0]
 
     def test_get_exchange_name(self):
         # Given

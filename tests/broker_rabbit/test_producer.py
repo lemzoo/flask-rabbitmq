@@ -47,7 +47,7 @@ class TestProducer(TestBase):
         error_message = 'Queue with name `UNKNOWN` is not declared.' \
                         'Please call bootstrap before using publish'
 
-        assert error_message == error.value.args[0]
+        assert error_message == error.value.args[0][0]
 
     def test_should_open_channel_before_sending_message(self):
         # When
