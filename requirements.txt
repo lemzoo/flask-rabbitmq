@@ -3,3 +3,4 @@ Flask-Script==2.0.6
 pika==0.10.0
 pyrabbit==1.1.0
 pytest==4.5.0
+pytest-cov==2.7.1
