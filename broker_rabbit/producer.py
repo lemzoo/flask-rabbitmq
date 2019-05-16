@@ -43,7 +43,7 @@ class Producer:
         """
 
         if queue not in self._queues:
-            error_msg = f'This queue ’{queue}’ is not declared.' \
+            error_msg = f'Queue with name `{queue}` is not declared.' \
                 f'Please call bootstrap before using publish'
             raise QueueDoesNotExistError(error_msg)
 

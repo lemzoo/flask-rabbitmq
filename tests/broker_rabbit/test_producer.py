@@ -44,7 +44,7 @@ class TestProducer(TestBase):
             self.producer.publish(unknown_queue, self.message)
 
         # Then
-        error_message = 'This queue ’UNKNOWN’ is not declared.' \
+        error_message = 'Queue with name `UNKNOWN` is not declared.' \
                         'Please call bootstrap before using publish'
 
         assert error_message == error.value.args[0]
@@ -108,7 +108,6 @@ class TestProducerBootstrap(TestBase):
         self.queue_handler.assert_called_once_with(channel, self.exchange_name)
         assert 4 == self.queue_handler().setup_queue.call_count
 
-    @pytest.mark.skip
     def test_should_close_channel_at_the_end(self):
         # When
         self.producer.bootstrap(self.queues)
