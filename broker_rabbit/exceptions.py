@@ -7,11 +7,11 @@ class UnknownQueueError(BrokerRabbitError):
     pass
 
 
-class ExchangeNotDefinedError(BrokerRabbitError):
+class ExchangeUndefinedError(BrokerRabbitError):
     pass
 
 
-class ChannelNotDefinedError(BrokerRabbitError):
+class ChannelUndefinedError(BrokerRabbitError):
     pass
 
 

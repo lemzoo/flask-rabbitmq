@@ -1,4 +1,4 @@
-from broker_rabbit.exceptions import ChannelNotDefinedError, ExchangeNotDefinedError
+from broker_rabbit.exceptions import ChannelUndefinedError, ExchangeUndefinedError
 
 
 class ExchangeHandler:
@@ -31,7 +31,7 @@ class ExchangeHandler:
         finished using it. By default, it's False.
         """
         if self._channel is None:
-            raise ChannelNotDefinedError('The channel was not defined')
+            raise ChannelUndefinedError('The channel was not defined')
 
         # Check Me : self._channel.basic_qos(prefetch_count=1)
         self._channel.exchange_declare(
@@ -41,6 +41,6 @@ class ExchangeHandler:
     @property
     def name(self):
         if self._name is None:
-            raise ExchangeNotDefinedError('The exchange is not defined')
+            raise ExchangeUndefinedError('The exchange is not defined')
 
         return self._name

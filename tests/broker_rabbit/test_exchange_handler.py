@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from broker_rabbit.exceptions import ChannelNotDefinedError, ExchangeNotDefinedError
+from broker_rabbit.exceptions import ChannelUndefinedError, ExchangeUndefinedError
 from broker_rabbit.exchange_handler import ExchangeHandler
 
 
@@ -16,7 +16,7 @@ class TestExchangeHandler:
         # When
         exchange_handler = ExchangeHandler(channel, exchange_name)
 
-        with pytest.raises(ChannelNotDefinedError) as error:
+        with pytest.raises(ChannelUndefinedError) as error:
             exchange_handler.setup_exchange()
 
         # Then
@@ -41,7 +41,7 @@ class TestExchangeHandler:
         exchange_handler = ExchangeHandler(None, None)
 
         # When
-        with pytest.raises(ExchangeNotDefinedError) as error:
+        with pytest.raises(ExchangeUndefinedError) as error:
             exchange_handler.name
 
         # Then

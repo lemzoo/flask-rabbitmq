@@ -7,7 +7,7 @@ from pika.spec import Basic
 
 from broker_rabbit.exceptions import (
     ConnectionNotOpenedError, ConnectionIsClosedError,
-    WorkerExitError, ChannelNotDefinedError, BadFormatMessageError,
+    WorkerExitError, ChannelUndefinedError, BadFormatMessageError,
     CallBackError)
 
 from broker_rabbit.channels import (ChannelHandler, WorkerChannel,
@@ -82,7 +82,7 @@ class TestChannelHandler(RabbitBrokerTest):
         self.channel_handler._channel = None
 
         # When
-        with pytest.raises(ChannelNotDefinedError) as error:
+        with pytest.raises(ChannelUndefinedError) as error:
             self.channel_handler.get_channel()
 
         # Then
