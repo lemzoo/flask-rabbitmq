@@ -175,7 +175,6 @@ class TestWorkerChannelBindCallBack(TestWorkerChannel):
         orig = "test_callback() missing 1 required positional argument: 'arg2'"
         assert orig == error.value.args[1]['original_exception']
 
-    @pytest.mark.skip
     def test_should_call_callback_with_decoded_message(self):
         # Given
         # Monkey Patch the call back
@@ -188,7 +187,7 @@ class TestWorkerChannelBindCallBack(TestWorkerChannel):
         self.worker.bind_callback(raw_message)
 
         # Then
-        callback_mock.assert_called_with(message)
+        callback_mock.assert_called_with(raw_message)
 
 
 @pytest.mark.unit_test
