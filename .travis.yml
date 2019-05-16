@@ -19,5 +19,5 @@ before_script:
 
 # command to run tests
 script:
-  - pytest tests -x --cov=broker_rabbit
+  - pytest tests -x --cov=broker_rabbit --cov-fail-under=76
 
