@@ -2,7 +2,11 @@ dist: xenial
 sudo: true
 language: python
 cache: pip
-      
+
+addons:
+  apt:
+    packages: rabbitmq-server
+  
 services: rabbitmq
 
 python:
