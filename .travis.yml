@@ -2,8 +2,7 @@ sudo: required
 language: python
 cache: pip
 
-services:
-  - rabbitmq
+services: rabbitmq
 
 python:
   - "3.7"
