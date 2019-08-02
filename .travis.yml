@@ -1,10 +1,7 @@
-sudo: required
+dist: xenial
+sudo: true
 language: python
 cache: pip
-
-addons:
-  apt:
-    packages: rabbitmq-server
       
 services: rabbitmq
 
@@ -24,4 +21,3 @@ before_script:
 # command to run tests
 script:
   - pytest tests -x --cov=broker_rabbit --cov-fail-under=76
-
