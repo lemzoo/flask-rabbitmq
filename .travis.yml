@@ -19,6 +19,7 @@ install:
 
 # Create a virtual host in RabbitMQ server
 before_script:
+  - rabbitmq-plugins enable rabbitmq_management
   - curl -i -u $USERNAME:$PASSWORD -X PUT $BASE_URL/vhosts/$VHOST
   - curl -i -u $USERNAME:$PASSWORD -X PUT $BASE_URL/permissions/$VHOST/$USERNAME -d {$PERMISSION}
 
