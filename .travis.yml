@@ -9,9 +9,7 @@ addons:
   
 services: rabbitmq
 
-python:
-  - "3.7"
-  - "3.7-dev"  # 3.7 development branch
+python: "3.6.1"
 
 # command to install dependencies
 install:
