@@ -18,10 +18,12 @@ install:
 # Create a virtual host in RabbitMQ server
 before_script:
   - sudo rabbitmq-plugins enable rabbitmq_management
-  - curl -i -u $USERNAME:$PASSWORD -X GET $BASE_URL/vhosts
-  - curl -i -u $USERNAME:$PASSWORD -X XPUT $BASE_URL/vhosts/$VHOST
-  - curl -i -u $USERNAME:$PASSWORD -X GET $BASE_URL/vhosts/$VHOST
-  - curl -i -u $USERNAME:$PASSWORD -X PUT $BASE_URL/permissions/$VHOST/$USERNAME -d {$PERMISSION}
+  # - curl -i -u $USERNAME:$PASSWORD -X GET $BASE_URL/vhosts
+  # - curl -i -u $USERNAME:$PASSWORD -X XPUT $BASE_URL/vhosts/$VHOST
+  # - curl -i -u $USERNAME:$PASSWORD -X GET $BASE_URL/vhosts/$VHOST
+  # - curl -i -u $USERNAME:$PASSWORD -X PUT $BASE_URL/permissions/$VHOST/$USERNAME -d {$PERMISSION}
+  sudo rabbitmqctl add_vhost $VHOST
+  sudo rabbitmqctl set_permissions -p $VHOST $USERNAME ".*" ".*" ".*"
 
 # command to run tests
 script:
