@@ -19,7 +19,7 @@ install:
 before_script:
   - sudo rabbitmq-plugins enable rabbitmq_management
   - curl -i -u $USERNAME:$PASSWORD -X GET $BASE_URL/vhosts
-  - curl -i -u $USERNAME:$PASSWORD -X PUT $BASE_URL/vhosts/$VHOST
+  - curl -i -u $USERNAME:$PASSWORD -X XPUT $BASE_URL/vhosts/$VHOST
   - curl -i -u $USERNAME:$PASSWORD -X GET $BASE_URL/vhosts/$VHOST
   - curl -i -u $USERNAME:$PASSWORD -X PUT $BASE_URL/permissions/$VHOST/$USERNAME -d {$PERMISSION}
 
