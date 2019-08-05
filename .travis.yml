@@ -2,14 +2,16 @@ dist: xenial
 sudo: true
 language: python
 cache: pip
-  
-services: rabbitmq
 
+addons:
+  apt:
+    packages: rabbitmq-server 
+    
+services: rabbitmq
 python: "3.6.1"
 
 # command to install dependencies
-install:
-  - pip install -r requirements.txt
+install: pip install -r requirements.txt
 
 # Create a virtual host in RabbitMQ server
 before_script:
