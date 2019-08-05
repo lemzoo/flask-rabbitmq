@@ -8,7 +8,7 @@ addons:
     packages: rabbitmq-server 
     
 services: rabbitmq
-python: "3.6.1"
+python: "3.6.5"
 
 # command to install dependencies
 install: pip install -r requirements.txt
