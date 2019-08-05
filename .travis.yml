@@ -1,23 +1,24 @@
-sudo: required
+dist: xenial
+sudo: true
 language: python
 cache: pip
 
-services:
-  - rabbitmq
-
-python:
-  - "3.6.1"
+addons:
+  apt:
+    packages: rabbitmq-server 
+    
+services: rabbitmq
+python: "3.6.5"
 
 # command to install dependencies
-install:
-  - pip install -r requirements.txt
+install: pip install -r requirements.txt
 
 # Create a virtual host in RabbitMQ server
 before_script:
-  - curl -i -u $USERNAME:$PASSWORD -X PUT $BASE_URL/vhosts/$VHOST
-  - curl -i -u $USERNAME:$PASSWORD -X PUT $BASE_URL/permissions/$VHOST/$USERNAME -d {$PERMISSION}
+  - sudo rabbitmq-plugins enable rabbitmq_management
+  - sudo rabbitmqctl add_vhost $VHOST
+  - sudo rabbitmqctl set_permissions -p $VHOST $USERNAME ".*" ".*" ".*"
 
 # command to run tests
 script:
   - pytest tests -x --cov=broker_rabbit --cov-fail-under=76
-

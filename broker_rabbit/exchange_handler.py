@@ -1,4 +1,5 @@
-from broker_rabbit.exceptions import ChannelUndefinedError, ExchangeUndefinedError
+from broker_rabbit.exceptions import (ChannelUndefinedError,
+                                      ExchangeUndefinedError)
 
 
 class ExchangeHandler:
