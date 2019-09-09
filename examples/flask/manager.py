@@ -1,6 +1,6 @@
 from flask_script import Manager, Server, Shell
 
-from main import bootstrap_app
+from examples.flask.main import bootstrap_app
 from broker_rabbit.manager import broker_rabbit_manager
 
 app = bootstrap_app()

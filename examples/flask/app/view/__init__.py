@@ -1,6 +1,6 @@
 from flask_restful import Api
 
-from app.view.api import UserRegistrationAPI, UserAPI
+from examples.flask.app.view import UserRegistrationAPI, UserAPI
 
 api = Api()
 

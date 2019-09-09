@@ -41,8 +41,8 @@ def bootstrap_app(app=None, config=None):
     elif config:
         app.config.update(config)
 
-    from app.events import events
-    from app.view import api
+    from examples.flask.app.events import events
+    from examples.flask.app.view import api
 
     app.bootstrap()
 

@@ -4,8 +4,8 @@ Centralize the events
 
 from flask import current_app
 
-from app.events.events_handler_template import EVENT_MESSAGE_MANAGER
-from broker.event_handler import EventManager
+from examples.flask.app.events import EVENT_MESSAGE_MANAGER
+from examples.flask.broker.event_handler import EventManager
 from broker_rabbit.broker import BrokerRabbitMQ
 
 
