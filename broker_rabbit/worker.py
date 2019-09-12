@@ -10,7 +10,7 @@ class Worker:
     close the current channel.
     """
 
-    def __init__(self, connection_handler, queue, on_message_callback):
+    def __init__(self, connection_handler, queue, message_callback):
         """
         Instantiate a Worker with an opened connection and a queue name to work
         The channel is opened in the instantiation of the module for ready use.
@@ -19,13 +19,13 @@ class Worker:
         :param ConnectionHandler connection_handler : The connection to use
             between the worker and RabbitMQ.
         :param str queue : The name of the queue which to consume message
-        :param callback on_message_callback: the callback to call when message
+        :param callback message_callback: the callback to call when message
             is received from RabbitMQ
         """
         self._connection = connection_handler.get_current_connection()
         self._queue = queue
         self._worker_channel = WorkerChannel(self._connection, self._queue,
-                                             on_message_callback)
+                                             message_callback)
 
         self.logger = logging.getLogger('RabbitMQ-Worker')
 

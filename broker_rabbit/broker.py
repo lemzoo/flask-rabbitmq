@@ -1,10 +1,12 @@
 from datetime import datetime
 
+
 from broker_rabbit.channels import ProducerChannel
 from broker_rabbit.exceptions import UnknownQueueError
 
 from broker_rabbit.connection_handler import ConnectionHandler
 from broker_rabbit.producer import Producer
+from broker_rabbit.worker import Worker
 
 DEFAULT_URL = 'amqp://test:test@localhost:5672/foo-test'
 DEFAULT_EXCHANGE = 'FOO-EXCHANGE'
@@ -84,3 +86,20 @@ class BrokerRabbitMQ:
         }
 
         return self.producer.publish(queue, message)
+
+    def list_queues(self):
+        """List all available queue in the app"""
+        for queue in self.queues:
+            print('Queue name : `%s`' % queue)
+
+    def start(self, queue):
+        """Start worker on a given queue
+        :param queue: the queue which you consume message for
+        """
+        if queue not in self.queues:
+            raise RuntimeError(f'Queue with name`{queue}` not found')
+
+        worker = Worker(connection_handler=self.connection_handler,
+                        message_callback=self.on_message_callback, queue=queue)
+        print(f'Start consuming message on the queue `{queue}')
+        worker.consume_message()
