@@ -11,9 +11,9 @@ of flask API which publishing a message to the Rabbit MQ server.
 It contains four routes. And in it's route, an event will send to the message broker.
 The broker message will route the message to Rabbit MQ by publishing the message on the correct queue.
 
- * Flask API: Provides four route which publish the message.
- * Broker: Routes the message to the correct queue on the RabbitMQ server.
- * Broker Manager: Provides a services which consume the message on RabbitMQ server.
+ * Flask application
+ * A producer which push the messages to the right queue
+ * A worker which consume the pushed messages from RabbitMQ server.
 
 Requirements
 ------------
