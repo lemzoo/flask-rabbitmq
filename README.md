@@ -65,7 +65,7 @@ app.py
     
     app = Flask(__name__)
     app.config['RABBIT_MQ_URL'] = 'amqp://guest:guest@localhost:5672/test-flask-rabbitmq'
-    app.config['EXCHANGE_NAME'] = 'testing'
+    app.config['EXCHANGE_NAME'] = 'test-exchange'
     
     
     broker = BrokerRabbitMQ()
