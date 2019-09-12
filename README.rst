@@ -3,7 +3,7 @@
 # Flask with Rabbit MQ message broker in Python
 
 Overview
-========
+--------
 
 Flask with Rabbit MQ message broker is an example project which demonstrates the use
 of flask API which publishing a message to the Rabbit MQ server.
@@ -16,22 +16,20 @@ The broker message will route the message to Rabbit MQ by publishing the message
  * Broker Manager: Provides a services which consume the message on RabbitMQ server.
 
 Requirements
-===========
+------------
 
 * Python 3 and requirements file dependencies
-* virtualenv
-* RabbitMQ
+* RabbitMQ broker
 
-Install
-=======
+Installing
+----------
 
-The quick way is use the provided `make` file.
+Install and update using pip:
 
-Create first a virtual env
+Create a virtualenv
     
-    $ virtualenv -p /usr/bin/python3 venv
+    $ python -m venv venv
 
-Where /usr/bin/python3 is the location of the python on your laptop
 
 Source the virtualenv
 
@@ -43,8 +41,8 @@ Install all the dependencies on the requirements file
     $ pip install -Ur requirements.txt
 
 
-Getting Started
-===============
+A simple example
+----------------
 
 create three files which represent the application
 
@@ -84,3 +82,9 @@ consumer.py
     from app import broker
     
     broker.start(queue='users')
+
+
+Contributing
+------------
+
+This section will be soon available
