@@ -28,96 +28,59 @@ Install
 The quick way is use the provided `make` file.
 
 Create first a virtual env
-<code>
-$ virtualenv -p /usr/bin/python3 venv
-</code>
+    
+    $ virtualenv -p /usr/bin/python3 venv
 
 Where /usr/bin/python3 is the location of the python on your laptop
 
 Source the virtualenv
-<code>
-$ source venv/bin/activate
-</code>
+
+    $ source venv/bin/activate
+
 
 Install all the dependencies on the requirements file
-<code>
-$ pip install -Ur requirements.txt
-</code>
+
+    $ pip install -Ur requirements.txt
 
 
-Starting and Stopping API and Broker
-========================================
+Getting Started
+===============
 
-To launch the API on debug mode:
-<code>
-$ python manager.py runserver -dr
-</code>
-
-To list the availbales queues which pusblish and consume for:
-<code>
-$ python manager.py broker list_queues
-</code>
-
-To start consuming on a queue `user`
-<code>
-$ python manager.py broker start user
-</code>
+create three files which represent the application
 
 
-APIs and Documentation
-======================
+app.py
+
+    from time import sleep
+    
+    from flask import Flask
+    
+    from broker_rabbit import BrokerRabbitMQ
+    
+    
+    def process_message(message):
+        print('Message received and content is ’{content}’'.format(content=message))
+        sleep(2)
+    
+    
+    app = Flask(__name__)
+    app.config['RABBIT_MQ_URL'] = 'amqp://guest:guest@localhost:5672/test-flask-rabbitmq'
+    app.config['EXCHANGE_NAME'] = 'testing'
+    
+    
+    broker = BrokerRabbitMQ()
+    broker.init_app(app=app, queues=['users'], on_message_callback=process_message)
 
 
-To create a new user:
+producer.py
 
-    POST /users
-    Create a new user basing on the given payload.
-
-    {
-      "email": "john.doe@user.com",
-      "first_name": "Doe",
-      "last_name": "John"
-    }
-
-    ===> 201 Ok
-    {
-        "email": "john.doe@user.com",
-        "first_name": "Doe",
-        "last_name": "John"
-    }
-    ...... output truncated ......
-
-To get a created user:
-
-    GET /users/john.doe@user.com
-    Returns a corresponding user in the database.
-
-    {
-        "email": "john.doe@user.com",
-        "first_name": "Doe",
-        "last_name": "John"
-    },
-    ...... output truncated ......
+    from app import broker
+    
+    broker.send(queue='users', context={'key': 'value', 'number': 1})
 
 
-To update a user:
+consumer.py
 
-    PATCH /users/john.doe@user.com
-    Create a new user basing on the given payload.
-
-    {
-      "first_name": "Doe-updated"
-    }
-
-    ===> 200 Ok
-    {
-        "email": "john.doe@user.com",
-        "first_name": "Doe-updated",
-        "last_name": "John"
-    }
-    ...... output truncated ......
-
-Create a user :
-    Sent a welcome message
-    Sent a temporary password to change
-    Sent a link to activate the account
+    from app import broker
+    
+    broker.start(queue='users')
