@@ -1,6 +1,8 @@
+# Flask with Rabbit MQ message broker in Python
+
 [![Build Status](https://travis-ci.org/lemzoo/flask-rabbitmq.svg?branch=master)](https://travis-ci.org/lemzoo/flask-rabbitmq)
 
-# Flask with Rabbit MQ message broker in Python
+[![codecov.io](https://codecov.io/gh/lemzoo/flask-rabbitmq/branch/master/graphs/badge.svg?branch=master)](https://codecov.io/gh/lemzoo/flask-rabbitmq)
 
 Overview
 --------
