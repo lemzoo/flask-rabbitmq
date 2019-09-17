@@ -101,5 +101,5 @@ class BrokerRabbitMQ:
 
         worker = Worker(connection_handler=self.connection_handler,
                         message_callback=self.on_message_callback, queue=queue)
-        print(f'Start consuming message on the queue `{queue}')
+        print(f'Start consuming message on the queue `{queue}`')
         worker.consume_message()

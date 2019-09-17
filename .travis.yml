@@ -8,17 +8,18 @@ addons:
     packages: rabbitmq-server 
     
 services: rabbitmq
-python: "3.6.5"
+python:
+  - "3.6"
 
-# command to install dependencies
 install: pip install -r requirements.txt
 
-# Create a virtual host in RabbitMQ server
 before_script:
   - sudo rabbitmq-plugins enable rabbitmq_management
   - sudo rabbitmqctl add_vhost $VHOST
   - sudo rabbitmqctl set_permissions -p $VHOST $USERNAME ".*" ".*" ".*"
 
-# command to run tests
 script:
-  - pytest tests -x --cov=broker_rabbit --cov-fail-under=80
+  - pytest tests -x --cov-report=term --cov=broker_rabbit --cov-fail-under=80
+
+after_success:
+  - codecov
