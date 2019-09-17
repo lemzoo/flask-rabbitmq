@@ -42,16 +42,6 @@ class BrokerRabbitMQ:
         :param callback on_message_callback: callback to execute when new
         message is pulled to RabbitMQ
         """
-        if not hasattr(app, 'extensions'):
-            app.extensions = {}
-
-        if 'broker_rabbit' not in app.extensions:
-            app.extensions['broker_rabbit'] = self
-        else:
-            # Raise an exception if extension already initialized as
-            # potentially new configuration would not be loaded.
-            raise RuntimeError('Extension already initialized')
-
         self.url = app.config.get('RABBIT_MQ_URL', DEFAULT_URL)
         self.exchange_name = app.config.get('EXCHANGE_NAME', DEFAULT_EXCHANGE)
         self.application_id = app.config.get('APPLICATION_ID', DEFAULT_APP)
