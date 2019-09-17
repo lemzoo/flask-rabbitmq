@@ -19,9 +19,8 @@ class TestBrokerRabbitMQ(RabbitBrokerTest):
         return client_rabbit_bis(BROKER_URL_TEST)
 
     def setup(self):
-        config = {'RABBIT_MQ_URL': BROKER_URL_TEST,
-                  'EXCHANGE_NAME': 'test-exchange'}
-        attributes = {'config': config, 'extensions': {}}
+        attributes = {'config': {'RABBIT_MQ_URL': BROKER_URL_TEST,
+                                 'EXCHANGE_NAME': 'test-exchange'}}
         app = Mock(name='broker', **attributes)
 
         self.broker.init_app(app=app, queues=[self.queue],
