@@ -19,7 +19,8 @@ before_script:
   - sudo rabbitmqctl set_permissions -p $VHOST $USERNAME ".*" ".*" ".*"
 
 script:
-  - pytest tests -x --cov-report=term --cov=broker_rabbit --cov-fail-under=80
+  - flake8 broker_rabbit
+  - pytest tests -x --cov-report=term --cov=broker_rabbit --cov-fail-under=90
 
 after_success:
   - codecov
